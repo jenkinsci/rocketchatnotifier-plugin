@@ -45,6 +45,13 @@
     </license>
   </licenses>
 
+  <scm>
+    <connection>scm:git:ssh://github.com/jenkinsci/rocketchatnotifier-plugin.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com/jenkinsci/rocketchatnotifier-plugin.git</developerConnection>
+    <url>https://github.com/jenkinsci/rocketchatnotifier-plugin</url>
+    <tag>HEAD</tag>
+  </scm>
+
   <!-- get every artifact through repo.jenkins-ci.org, which proxies all the
         artifacts that we need -->
   <repositories>
