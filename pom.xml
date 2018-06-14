@@ -37,6 +37,7 @@
   <artifactId>rocketchatnotifier${artifactSuffix}</artifactId>
   <version>1.2.2-SNAPSHOT</version>
   <packaging>hpi</packaging>
+  <url>https://plugins.jenkins.io/rocketchatnotifier</url>
 
   <licenses>
     <license>
