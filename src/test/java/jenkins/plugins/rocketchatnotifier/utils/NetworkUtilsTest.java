@@ -40,6 +40,9 @@ public class NetworkUtilsTest {
       {new ProxyConfiguration("sample1", 1234, null, null, "*.test.*|localhost"), "http://rocket.test.com", true},
       {new ProxyConfiguration("sample1", 1234, null, null, "rocket.test.com"), "http://rocket.test.com", true},
       {new ProxyConfiguration("sample1", 1234, null, null, "rocket.test.com"), "https://rocket.test.com", true},
+      {new ProxyConfiguration("sample1", 1234, null, null, "rocket.test.com"), "https://rocket.test.com:8443", true},
+      {new ProxyConfiguration("sample1", 1234, null, null, "rocket.test.com"), "https://rocket.test.com/nestedUrl", true},
+      {new ProxyConfiguration("sample1", 1234, null, null, "rocket.test.com"), "https://rocket.test.com:8443/nestedUrl", true},
       {new ProxyConfiguration("sample1", 1234, null, null, "*.test.com|localhost"), "http://rocket.test2.com", false},
 
     });

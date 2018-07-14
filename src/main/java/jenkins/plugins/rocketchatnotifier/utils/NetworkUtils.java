@@ -2,6 +2,7 @@ package jenkins.plugins.rocketchatnotifier.utils;
 
 import hudson.ProxyConfiguration;
 
+import java.net.URI;
 import java.util.regex.Pattern;
 
 public class NetworkUtils {
@@ -16,7 +17,7 @@ public class NetworkUtils {
   public static boolean isHostOnNoProxyList(String host, ProxyConfiguration proxy) {
     if (host != null && proxy.noProxyHost != null) {
       for (Pattern p : ProxyConfiguration.getNoProxyHostPatterns(proxy.noProxyHost)) {
-        if (p.matcher(host.replaceFirst("^(http[s]?://www\\.|http[s]?://|www\\.)", "")).matches()) {
+        if (p.matcher(URI.create(host).getHost()).matches()) {
           return true;
         }
       }
