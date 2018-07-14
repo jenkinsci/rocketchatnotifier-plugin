@@ -16,7 +16,7 @@ import static org.mockito.BDDMockito.given;
 public class BuildUtilsTest {
 
   @Mock
-  private Run<?, ?> run;
+  private Run run;
   @Mock
   private Run firstRun;
   @Mock
