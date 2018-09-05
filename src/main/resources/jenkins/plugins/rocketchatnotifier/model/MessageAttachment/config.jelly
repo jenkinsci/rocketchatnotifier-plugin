@@ -33,7 +33,7 @@
       <f:textbox/>
     </f:entry>
     <f:entry field="titleLinkDownload" title="title_link_download">
-      <f:textbox/>
+      <f:checkbox/>
     </f:entry>
     <f:entry field="imageUrl" title="image_url">
       <f:textbox/>

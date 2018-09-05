@@ -42,7 +42,7 @@ public class MessageAttachmentTest {
     messageAttachment.setAuthorIcon("AuthorIcon");
     messageAttachment.setAuthorLink("AuthorLink");
     messageAttachment.setTitleLink("titleLink");
-    messageAttachment.setTitleLinkDownload("titleLinkDownload");
+    messageAttachment.setTitleLinkDownload(false);
     messageAttachment.setImageUrl("imageUrl");
     messageAttachment.setAudioUrl("audioUrl");
     messageAttachment.setVideoUrl("videoUrl");

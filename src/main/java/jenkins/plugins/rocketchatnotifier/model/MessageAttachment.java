@@ -43,7 +43,7 @@ public class MessageAttachment extends AbstractDescribableImpl<MessageAttachment
   @JsonProperty("title_link")
   private String titleLink;
   @JsonProperty("title_link_download")
-  private String titleLinkDownload;
+  private Boolean titleLinkDownload;
   @JsonProperty("image_url")
   private String imageUrl;
   @JsonProperty("audio_url")
@@ -151,13 +151,15 @@ public class MessageAttachment extends AbstractDescribableImpl<MessageAttachment
     this.titleLink = titleLink;
   }
 
-  public String getTitleLinkDownload() {
+  public Boolean getTitleLinkDownload() {
     return titleLinkDownload;
   }
 
   @DataBoundSetter
-  public void setTitleLinkDownload(final String titleLinkDownload) {
-    this.titleLinkDownload = titleLinkDownload;
+  public void setTitleLinkDownload(final Boolean titleLinkDownload) {
+    if (titleLinkDownload) {
+      this.titleLinkDownload = titleLinkDownload;
+    }
   }
 
   public String getImageUrl() {
@@ -199,7 +201,7 @@ public class MessageAttachment extends AbstractDescribableImpl<MessageAttachment
     attachment.setAuthorIcon(sanitizeEmptyStringtoNull(json.getString("authorIcon")));
     attachment.setAuthorLink(sanitizeEmptyStringtoNull(json.getString("authorLink")));
     attachment.setTitleLink(sanitizeEmptyStringtoNull(json.getString("titleLink")));
-    attachment.setTitleLinkDownload(sanitizeEmptyStringtoNull(json.getString("titleLinkDownload")));
+    attachment.setTitleLinkDownload(json.getBoolean("titleLinkDownload"));
     attachment.setImageUrl(sanitizeEmptyStringtoNull(json.getString("imageUrl")));
     attachment.setAudioUrl(sanitizeEmptyStringtoNull(json.getString("audioUrl")));
     attachment.setVideoUrl(sanitizeEmptyStringtoNull(json.getString("videoUrl")));
