@@ -9,8 +9,8 @@ public class Message {
   public Message() {
   }
 
-  public Message(String messsage) {
-    this.msg = messsage;
+  public Message(String message) {
+    this.msg = message;
   }
 
   public String getMsg() {
