@@ -50,7 +50,7 @@ node {
 
 The message looks then like this:
 
-![sampel message](rocket_sample_message.png)
+![sample message](rocket_sample_message.png)
 
 It also works with normal jobs:
 
@@ -62,7 +62,7 @@ It also works with normal jobs:
 You can define a default notification channel:
 
 
-![sampel message](rocket_admin_settings.png)
+![sample message](rocket_admin_settings.png)
 
 # Contribution
 
