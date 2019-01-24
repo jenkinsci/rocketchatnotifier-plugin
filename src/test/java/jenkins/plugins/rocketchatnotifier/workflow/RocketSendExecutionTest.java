@@ -27,7 +27,7 @@ public class RocketSendExecutionTest {
   }
 
   @Test
-  public void convertMessageAttachmentsShouldNotConvertNullPropertie() {
+  public void convertMessageAttachmentsShouldNotConvertNullProperties() {
     List<MessageAttachment> attachments = new ArrayList<MessageAttachment>();
     MessageAttachment messageAttachment = new MessageAttachment("title");
     attachments.add(messageAttachment);
