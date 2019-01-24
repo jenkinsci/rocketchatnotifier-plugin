@@ -62,7 +62,7 @@ public class RocketChatNotifierTest {
   }
 
   @Test
-  public void shouldFallbackToJenkinsUrlIfBuildServerUrlIsNotProvived() throws Exception {
+  public void shouldFallbackToJenkinsUrlIfBuildServerUrlIsNotProvided() throws Exception {
     // given
     notifier.setBuildServerUrl(null);
     // when
