@@ -63,7 +63,7 @@ public interface RocketChatClient {
 
   /**
    * sends a message to a channel.
-   * If emoji and avatar are difined, only emoji will be displayed
+   * If emoji and avatar are defined, only emoji will be displayed
    *
    * @param channelName to use
    * @param message     to send
@@ -76,7 +76,7 @@ public interface RocketChatClient {
 
   /**
    * sends a message to a channel.
-   * If emoji and avatar are difined, only emoji will be displayed
+   * If emoji and avatar are defined, only emoji will be displayed
    *
    * @param channelName to use
    * @param message     to send
