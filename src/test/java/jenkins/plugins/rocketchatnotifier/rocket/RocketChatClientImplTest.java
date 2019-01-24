@@ -87,10 +87,10 @@ public class RocketChatClientImplTest {
   public void shouldWorkWithEmojiAndAvatarAndAttachments() throws Exception {
     // given
     mockSuccess();
-    final List<Map<String, Object>> attachements = new ArrayList<Map<String, Object>>();
-    attachements.add(new HashMap<String, Object>());
+    final List<Map<String, Object>> attachments = new ArrayList<Map<String, Object>>();
+    attachments.add(new HashMap<String, Object>());
     // when
-    rocketChatClient.send("room", "message", "test", "avatar", attachements);
+    rocketChatClient.send("room", "message", "test", "avatar", attachments);
     // then no error
   }
 
