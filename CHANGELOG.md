@@ -111,7 +111,7 @@
 
 ### Features
 
-* add the posibility to send attachments. ([c56748e](https://github.com/jenkinsci/rocketchatnotifier-plugin/commit/c56748e))
+* add the possibility to send attachments. ([c56748e](https://github.com/jenkinsci/rocketchatnotifier-plugin/commit/c56748e))
 
 
 
