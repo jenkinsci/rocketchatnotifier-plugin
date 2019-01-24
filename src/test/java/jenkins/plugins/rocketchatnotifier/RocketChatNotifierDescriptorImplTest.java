@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Jenkins.class, RocketChatNotifier.DescriptorImpl.class})
-public class RocketChatNotifierDecriptorImplTest {
+public class RocketChatNotifierDescriptorImplTest {
 
   @Mock
   private Jenkins jenkins;
