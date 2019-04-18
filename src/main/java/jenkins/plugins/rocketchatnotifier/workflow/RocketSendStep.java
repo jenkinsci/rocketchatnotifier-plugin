@@ -222,8 +222,18 @@ public class RocketSendStep extends AbstractStepImpl {
       // placing in console log to simplify testing of retrieving values from global config or from step field; also used for tests
       listener.getLogger().println(Messages.RocketSendStepConfig(channel, step.message));
 
-      RocketClient rocketClient = getRocketClient(server, trustSSL, user, password, channel, webhookToken, webhookTokenCredentialId);
-
+      RocketClient rocketClient = null;
+      // getRocketClient needs to be wrapped inside a try-catch because it can fail too if the target RocketChat server does not behave properly.
+      try {
+        rocketClient = getRocketClient(server, trustSSL, user, password, channel, webhookToken, webhookTokenCredentialId);
+      } catch (RocketClientException rce) {
+        if (step.failOnError) {
+          throw rce;
+        } else {
+          listener.error(Messages.NotificationFailedWithException(rce));
+          return null;
+        }
+      }
       String msg = step.message;
       if (!step.rawMessage) {
         msg += "," + run.getFullDisplayName() + "," + jenkinsUrl + run.getUrl() + "";
