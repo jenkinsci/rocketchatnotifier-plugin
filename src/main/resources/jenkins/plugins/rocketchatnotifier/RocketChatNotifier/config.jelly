@@ -66,9 +66,18 @@
             </select>
         </f:entry>
 
+        <f:entry title="Rocket Server URL">
+            <f:textbox name="rocketServerUrl" value="${instance.getServerUrl()}"/>
+        </f:entry>
+
+        <f:entry title="Trust Server Certificate?" description="If checked, the SSL certificate of the Rocket Server will not be checked">
+            <f:checkbox field="trustSSL" name="trustSSL" checked="${instance.isTrustSSL()}"/>
+        </f:entry>
+
         <f:entry title="Project Channel" description="Comma separated list of rooms (e.g. #project) and / or persons (e.g. @john)">
             <f:textbox name="rocketChannel" value="${instance.getChannel()}"/>
         </f:entry>
+
         <f:entry title="Incoming Webhook Token" description="Webhook token for posting messages. Overrides global authentication data and channel.">
             <f:textbox field="webhookToken" name="webhookToken" value="${instance.getWebhookToken()}"/>
         </f:entry>
