@@ -21,7 +21,7 @@
     <httpclient.version>4.5.5</httpclient.version>
     <unirest.version>1.4.9</unirest.version>
     <jackson.version>2.9.9.1</jackson.version>
-    <hamcrest.version>1.3</hamcrest.version>
+    <hamcrest.version>2.1</hamcrest.version>
     <!-- testing libs -->
     <jenkins-plugins-junit.version>1.21</jenkins-plugins-junit.version>
     <powermock.version>1.6.2</powermock.version>
