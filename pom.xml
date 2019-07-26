@@ -16,7 +16,7 @@
     <java.level>7</java.level>
     <failsafeArgLine/>
     <skipITs>false</skipITs>
-    <workflow.version>1.11</workflow.version>
+    <workflow.version>2.20</workflow.version>
     <!-- Project Libs-->
     <httpclient.version>4.5.5</httpclient.version>
     <unirest.version>1.4.9</unirest.version>
