@@ -18,7 +18,7 @@
     <skipITs>false</skipITs>
     <workflow.version>1.11</workflow.version>
     <!-- Project Libs-->
-    <httpclient.version>4.5.5</httpclient.version>
+    <httpclient.version>4.5.9</httpclient.version>
     <unirest.version>1.4.9</unirest.version>
     <jackson.version>2.9.9.1</jackson.version>
     <hamcrest.version>2.1</hamcrest.version>
