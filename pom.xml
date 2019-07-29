@@ -24,7 +24,7 @@
     <hamcrest.version>2.1</hamcrest.version>
     <!-- testing libs -->
     <jenkins-plugins-junit.version>1.21</jenkins-plugins-junit.version>
-    <powermock.version>1.6.2</powermock.version>
+    <powermock.version>1.7.4</powermock.version>
     <!-- testing config -->
     <rocket.port>44443</rocket.port>
     <mongo.port>27017</mongo.port>
