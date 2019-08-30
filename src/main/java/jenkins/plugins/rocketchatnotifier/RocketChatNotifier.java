@@ -78,8 +78,7 @@ public class RocketChatNotifier extends Notifier {
   public String getBuildServerUrl() {
     LOGGER.log(Level.FINE, "Getting build server URL");
     if (buildServerUrl == null || buildServerUrl.equalsIgnoreCase("")) {
-      JenkinsLocationConfiguration jenkinsConfig = new JenkinsLocationConfiguration();
-      return jenkinsConfig.getUrl();
+      return JenkinsLocationConfiguration.get().getUrl();
     }
     else {
       return buildServerUrl;
