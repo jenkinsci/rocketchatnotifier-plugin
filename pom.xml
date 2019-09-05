@@ -213,6 +213,13 @@
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>junit</artifactId>
       <version>${jenkins-plugins-junit.version}</version>
+      <exclusions>
+        <!-- newer structs version is brought in by non-test dependencies, so exclude it here -->
+        <exclusion>
+          <groupId>org.jenkins-ci.plugins</groupId>
+          <artifactId>structs</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>
@@ -282,7 +289,9 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>credentials</artifactId>
-      <version>2.2.0</version>
+      <!-- must *not* use 2.2.0 here, otherwise enforcer will fail with:
+           Restricted to JDK 1.7 yet org.jenkins-ci.plugins:credentials:jar:2.2.0:compile contains com/cloudbees/plugins/credentials/BaseCredentials.class targeted to JDK 8 -->
+      <version>2.1.19</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
