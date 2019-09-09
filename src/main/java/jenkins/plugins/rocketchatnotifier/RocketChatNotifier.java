@@ -78,11 +78,16 @@ public class RocketChatNotifier extends Notifier {
 
   public String getBuildServerUrl() {
     LOGGER.log(Level.FINE, "Getting build server URL");
+    String res = null;
     if (buildServerUrl == null || buildServerUrl.equalsIgnoreCase("")) {
-      return getJenkinsLocationConfiguration().getUrl();
+      res = getJenkinsLocationConfiguration().getUrl();
     } else {
-      return buildServerUrl;
+      res = buildServerUrl;
     }
+    if (res == null) {
+      res = "";
+    }
+    return res;
   }
 
   /**
@@ -460,12 +465,17 @@ public class RocketChatNotifier extends Notifier {
 
 
     public String getBuildServerUrl() {
+      String res = null;
       if (buildServerUrl == null || buildServerUrl.equalsIgnoreCase("")) {
         JenkinsLocationConfiguration jenkinsConfig = new JenkinsLocationConfiguration();
-        return jenkinsConfig.getUrl();
+        res = jenkinsConfig.getUrl();
       } else {
-        return buildServerUrl;
+        res = buildServerUrl;
       }
+      if (res == null) {
+        res = "";
+      }
+      return res;
     }
 
     public boolean isApplicable(Class<? extends AbstractProject> aClass) {
