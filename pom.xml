@@ -23,7 +23,7 @@
     <jackson.version>2.9.9.1</jackson.version>
     <hamcrest.version>2.1</hamcrest.version>
     <!-- testing libs -->
-    <jenkins-plugins-junit.version>1.21</jenkins-plugins-junit.version>
+    <jenkins-plugins-junit.version>1.28</jenkins-plugins-junit.version>
     <powermock.version>1.6.2</powermock.version>
     <!-- testing config -->
     <rocket.port>44443</rocket.port>
