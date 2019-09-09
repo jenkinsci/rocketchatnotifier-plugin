@@ -6,8 +6,8 @@ export RC_VERSION=${RC_VERSION:-"develop"}
 
 # Rocket
 
-export MONGO_URL=mongodb://db:${MONGO_PORT}/rocketchat?replicaSet=rs01
-export MONGO_OPLOG_URL=mongodb://db:${MONGO_PORT}/local?replicaSet=rs01
+export MONGO_URL=mongodb://db:${MONGO_PORT}/rocketchat
+export MONGO_OPLOG_URL=mongodb://db:${MONGO_PORT}/local
 export HOME=/tmp
 export PORT=${RC_PORT}
 export ROOT_URL=http://localhost:${RC_PORT}
