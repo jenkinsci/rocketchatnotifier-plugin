@@ -67,7 +67,7 @@
         </f:entry>
 
         <f:entry title="Rocket Server URL">
-            <f:textbox name="rocketServerUrl" value="${instance.getServerUrl()}"/>
+            <f:textbox name="rocketServerUrl" value="${instance.getRocketServerUrl()}"/>
         </f:entry>
 
         <f:entry title="Trust Server Certificate?" description="If checked, the SSL certificate of the Rocket Server will not be checked">
