@@ -397,11 +397,11 @@ public class RocketChatNotifier extends Notifier {
     }
     String webhookTokenCredentialId = this.webhookTokenCredentialId;
     if (StringUtils.isEmpty(webhookTokenCredentialId)) {
-      channel = getDescriptor().getWebhookTokenCredentialId();
+      webhookTokenCredentialId = getDescriptor().getWebhookTokenCredentialId();
     }
     String webhookToken = this.webhookToken;
     if (StringUtils.isEmpty(webhookToken)) {
-      channel = getDescriptor().getWebhookToken();
+      webhookToken = getDescriptor().getWebhookToken();
     }
 
     EnvVars env;
