@@ -88,6 +88,6 @@
 
         <f:validateButton
                 title="${%Test Connection}" progress="${%Testing...}"
-                method="testConnection" with="channel,webhookToken,webhookTokenCredentialId"/>
+                method="testConnection" with="rocketServerUrl,trustSSL,channel,webhookToken,webhookTokenCredentialId"/>
     </f:advanced>
 </j:jelly>
