@@ -19,9 +19,9 @@
     <!-- Project Libs-->
     <httpclient.version>4.5.5</httpclient.version>
     <unirest.version>1.4.9</unirest.version>
-    <jackson.version>2.9.9.1</jackson.version>
+    <jackson.version>2.10.0.pr3</jackson.version>
     <hamcrest.version>2.1</hamcrest.version>
-    <jackson.version>2.9.8</jackson.version>
+    <jackson.version>2.10.0.pr3</jackson.version>
     <hamcrest.version>1.3</hamcrest.version>
     <workflow-api.version>2.22</workflow-api.version>
     <workflow-support.version>2.14</workflow-support.version>
