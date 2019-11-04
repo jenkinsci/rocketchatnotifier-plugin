@@ -349,7 +349,7 @@
     <dependency>
       <groupId>org.mock-server</groupId>
       <artifactId>mockserver-client-java</artifactId>
-      <version>3.11</version>
+      <version>5.7.0</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
