@@ -46,7 +46,7 @@
             <f:checkbox name="rawMessage" value="true" checked="${instance.isRawMessage()}"/>
         </f:entry>
 
-        <f:optionalBlock name="includeCustomMessage" title="Include Custom Message" checked="${instance.includeCustomMessage()}">
+        <f:optionalBlock name="includeCustomMessage" title="Include Custom Message" inline="true" checked="${instance.includeCustomMessage()}">
             <f:entry title="Custom Message">
                 <f:textarea name="customMessage" value="${instance.getCustomMessage()}"/>
             </f:entry>
