@@ -11,6 +11,7 @@ public class Response {
   private User user;
   private Room[] channels;
   private Room channel;
+  private String error;
 
   public void setSuccess(boolean result) {
     this.success = result;
@@ -80,6 +81,14 @@ public class Response {
     this.version = version;
   }
 
+  public String getError() {
+    return error;
+  }
+
+  public void setError(String error) {
+    this.error = error;
+  }
+
   @Override
   public String toString() {
     return Objects.toStringHelper(this)
@@ -91,6 +100,7 @@ public class Response {
       .add("channels", channels)
       .add("channel", channel)
       .add("version", version)
+      .add("error", error)
       .toString();
   }
 }

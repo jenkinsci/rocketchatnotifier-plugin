@@ -181,7 +181,7 @@ public class RocketChatClientImpl implements RocketChatClient {
       LOG.fine("Message sent was successfull.");
     } else {
       LOG.severe("Could not send message: " + res);
-      throw new RocketClientException("The send of the message was unsuccessful.");
+      throw new RocketClientException("The send of the message was unsuccessful. " + res);
     }
   }
 
