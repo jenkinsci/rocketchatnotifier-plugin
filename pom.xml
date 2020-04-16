@@ -273,7 +273,7 @@
       <artifactId>credentials</artifactId>
       <!-- must *not* use 2.2.0 here, otherwise enforcer will fail with:
            Restricted to JDK 1.7 yet org.jenkins-ci.plugins:credentials:jar:2.2.0:compile contains com/cloudbees/plugins/credentials/BaseCredentials.class targeted to JDK 8 -->
-      <version>2.1.19</version>
+      <version>2.3.6</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
