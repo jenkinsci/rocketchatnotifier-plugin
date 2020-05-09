@@ -76,10 +76,10 @@ public class RocketChatNotifier extends Notifier {
 
   public String getBuildServerUrl() {
     LOGGER.log(Level.FINE, "Getting build server URL");
-    if (buildServerUrl == null || buildServerUrl.equalsIgnoreCase("")) {
-      return getJenkinsLocationConfiguration().getUrl();
-    } else {
+    if (StringUtils.isNotBlank(buildServerUrl)) {
       return buildServerUrl;
+    } else {
+      return getJenkinsLocationConfiguration().getUrl();
     }
   }
 
@@ -92,11 +92,7 @@ public class RocketChatNotifier extends Notifier {
   @SuppressFBWarnings(value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE",
     justification = "False positive. See https://sourceforge.net/p/findbugs/bugs/1411/")
   private JenkinsLocationConfiguration getJenkinsLocationConfiguration() {
-    final JenkinsLocationConfiguration jlc = JenkinsLocationConfiguration.get();
-    if (jlc == null) {
-      throw new IllegalStateException("JenkinsLocationConfiguration not available");
-    }
-    return jlc;
+    return JenkinsLocationConfiguration.get();
   }
 
   public String getChannel() {
@@ -333,10 +329,8 @@ public class RocketChatNotifier extends Notifier {
   @DataBoundSetter
   public void setBuildServerUrl(String buildServerUrl) {
     this.buildServerUrl = buildServerUrl;
-    if (buildServerUrl == null || buildServerUrl.equalsIgnoreCase("")) {
-      JenkinsLocationConfiguration jenkinsConfig = new JenkinsLocationConfiguration();
-      this.buildServerUrl = jenkinsConfig.getUrl();
-    }
+    this.buildServerUrl = getBuildServerUrl();
+
     if (buildServerUrl != null && !buildServerUrl.endsWith("/")) {
       this.buildServerUrl = buildServerUrl + "/";
     }
@@ -498,12 +492,7 @@ public class RocketChatNotifier extends Notifier {
 
 
     public String getBuildServerUrl() {
-      if (buildServerUrl == null || buildServerUrl.equalsIgnoreCase("")) {
-        JenkinsLocationConfiguration jenkinsConfig = new JenkinsLocationConfiguration();
-        return jenkinsConfig.getUrl();
-      } else {
-        return buildServerUrl;
-      }
+      return StringUtils.defaultIfBlank(buildServerUrl, new JenkinsLocationConfiguration().getUrl());
     }
 
     @DataBoundSetter
@@ -529,10 +518,8 @@ public class RocketChatNotifier extends Notifier {
     @DataBoundSetter
     public void setBuildServerUrl(String buildServerUrl) {
       this.buildServerUrl = buildServerUrl;
-      if (buildServerUrl == null || buildServerUrl.equalsIgnoreCase("")) {
-        JenkinsLocationConfiguration jenkinsConfig = new JenkinsLocationConfiguration();
-        this.buildServerUrl = jenkinsConfig.getUrl();
-      }
+      this.buildServerUrl = getBuildServerUrl();
+
       if (buildServerUrl != null && !buildServerUrl.endsWith("/")) {
         this.buildServerUrl = buildServerUrl + "/";
       }

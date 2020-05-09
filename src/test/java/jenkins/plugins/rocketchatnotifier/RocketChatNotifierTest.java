@@ -81,10 +81,11 @@ public class RocketChatNotifierTest {
   @Test
   public void shouldFallbackToJenkinsUrlIfBuildServerUrlIsNotProvived() throws Exception {
     // given
-    notifier.setBuildServerUrl(null);
     JenkinsLocationConfiguration locationConfigMock = PowerMockito.mock(JenkinsLocationConfiguration.class);
     PowerMockito.when(locationConfigMock.getUrl()).thenReturn(EXPECTED_URL);
+    PowerMockito.mockStatic(JenkinsLocationConfiguration.class);
     PowerMockito.when(JenkinsLocationConfiguration.get()).thenReturn(locationConfigMock);
+    notifier.setBuildServerUrl(null);
     // when
     String serverUrl = notifier.getBuildServerUrl();
     // then
