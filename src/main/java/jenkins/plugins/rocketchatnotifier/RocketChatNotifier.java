@@ -45,13 +45,14 @@ import static com.cloudbees.plugins.credentials.CredentialsProvider.lookupCreden
 public class RocketChatNotifier extends Notifier {
 
   private static final Logger LOGGER = Logger.getLogger(RocketChatNotifier.class.getName());
+
   private String rocketServerUrl;
   private boolean trustSSL;
   private String username;
   private String password;
   private String channel;
   private String buildServerUrl;
-  private boolean startNotification;
+  private boolean notifyStart;
   private boolean notifySuccess;
   private boolean notifyAborted;
   private boolean notifyNotBuilt;
@@ -111,8 +112,8 @@ public class RocketChatNotifier extends Notifier {
     return attachments;
   }
 
-  public boolean getStartNotification() {
-    return startNotification;
+  public boolean getNotifyStart() {
+    return notifyStart;
   }
 
   public boolean getNotifySuccess() {
@@ -171,18 +172,26 @@ public class RocketChatNotifier extends Notifier {
     return webhookTokenCredentialId;
   }
 
+  public String getRocketServerUrl() {
+    return rocketServerUrl;
+  }
+
+  public boolean isTrustSSL() {
+    return trustSSL;
+  }
+
   @DataBoundSetter
   public void setChannel(String channel) {
     this.channel = channel;
   }
 
-  public boolean isStartNotification() {
-    return startNotification;
+  public boolean isNotifyStart() {
+    return notifyStart;
   }
 
   @DataBoundSetter
-  public void setStartNotification(boolean startNotification) {
-    this.startNotification = startNotification;
+  public void setNotifyStart(boolean notifyStart) {
+    this.notifyStart = notifyStart;
   }
 
   public boolean isNotifySuccess() {
@@ -343,7 +352,7 @@ public class RocketChatNotifier extends Notifier {
   }
 
   public RocketChatNotifier(final String rocketServerUrl, final boolean trustSSL, final String username, final String password, final String channel, final String buildServerUrl,
-                            final boolean startNotification, final boolean notifyAborted, final boolean notifyFailure,
+                            final boolean notifyStart, final boolean notifyAborted, final boolean notifyFailure,
                             final boolean notifyNotBuilt, final boolean notifySuccess, final boolean notifyUnstable, final boolean notifyBackToNormal,
                             final boolean notifyRepeatedFailure, final boolean includeTestSummary, final boolean includeTestLog, CommitInfoChoice commitInfoChoice,
                             boolean includeCustomMessage, final boolean rawMessage, String customMessage, List<MessageAttachment> attachments, String webhookToken, String webhookTokenCredentialId) {
@@ -354,7 +363,7 @@ public class RocketChatNotifier extends Notifier {
     this.password = password;
     this.buildServerUrl = buildServerUrl;
     this.channel = channel;
-    this.startNotification = startNotification;
+    this.notifyStart = notifyStart;
     this.notifyAborted = notifyAborted;
     this.notifyFailure = notifyFailure;
     this.notifyNotBuilt = notifyNotBuilt;
@@ -438,7 +447,7 @@ public class RocketChatNotifier extends Notifier {
 
   @Override
   public boolean prebuild(AbstractBuild<?, ?> build, BuildListener listener) {
-    if (startNotification) {
+    if (notifyStart) {
       Map<Descriptor<Publisher>, Publisher> map = build.getProject().getPublishersList().toMap();
       for (Publisher publisher : map.values()) {
         if (publisher instanceof RocketChatNotifier) {
@@ -637,7 +646,7 @@ public class RocketChatNotifier extends Notifier {
       }
     }
 
-    public ListBoxModel doFillTokenCredentialIdItems() {
+    public ListBoxModel doFillWebhookTokenCredentialIdItems() {
       if (!Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER)) {
         return new ListBoxModel();
       }

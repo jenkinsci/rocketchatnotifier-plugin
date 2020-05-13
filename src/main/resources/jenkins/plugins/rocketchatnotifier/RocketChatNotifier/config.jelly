@@ -58,12 +58,8 @@
           </f:entry>
         </f:optionalBlock>
 
-        <f:entry title="Notification message includes" description="What commit information to include into notification message">
-            <select class="setting-input" name="rocketCommitInfoChoice">
-                <j:forEach var="i" items="${descriptor.COMMIT_INFO_CHOICES}">
-                    <f:option selected="${instance.getCommitInfoChoice()==i}">${i.getDisplayName()}</f:option>
-                </j:forEach>
-            </select>
+        <f:entry name="commitInfoChoice" field="commitInfoChoice" title="Notification message includes" description="What commit information to include into notification message">
+          <f:enum>${it.displayName}</f:enum>
         </f:entry>
 
         <f:entry title="Rocket Server URL">

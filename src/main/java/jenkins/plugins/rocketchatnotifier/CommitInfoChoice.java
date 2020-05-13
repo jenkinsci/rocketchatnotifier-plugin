@@ -29,12 +29,4 @@ public enum CommitInfoChoice {
         return this.displayName;
     }
 
-    public static CommitInfoChoice forDisplayName(String displayName) {
-        for (CommitInfoChoice commitInfoChoice : values()) {
-            if (commitInfoChoice.getDisplayName().equals(displayName)) {
-                return commitInfoChoice;
-            }
-        }
-        return null;
-    }
 }
