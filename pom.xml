@@ -25,7 +25,7 @@
     <workflow-api.version>2.22</workflow-api.version>
     <workflow-support.version>2.14</workflow-support.version>
     <!-- testing libs -->
-    <jenkins-plugins-junit.version>1.27</jenkins-plugins-junit.version>
+    <jenkins-plugins-junit.version>1.37</jenkins-plugins-junit.version>
     <powermock.version>1.6.2</powermock.version>
     <!-- testing config -->
     <rocket.port>44443</rocket.port>
