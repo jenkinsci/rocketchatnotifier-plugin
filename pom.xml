@@ -369,10 +369,10 @@
 
   <ciManagement>
     <system>Jenkins</system>
-    <url>https://jenkins.ci.cloudbees.com/job/plugins/job/rocketchatnotifier-plugin/</url>
+    <url>https://ci.jenkins.io/job/Plugins/job/rocketchatnotifier-plugin/</url>
   </ciManagement>
 
-  <url>https://plugins.jenkins.io/rocketchatnotifier</url>
+  <url>https://github.com/jenkinsci/rocketchatnotifier-plugin/blob/develop/README.md</url>
 
   <developers>
     <developer>
