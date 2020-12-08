@@ -332,7 +332,7 @@
     <dependency>
       <groupId>org.mock-server</groupId>
       <artifactId>mockserver-netty</artifactId>
-      <version>3.11</version>
+      <version>5.11.2</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
