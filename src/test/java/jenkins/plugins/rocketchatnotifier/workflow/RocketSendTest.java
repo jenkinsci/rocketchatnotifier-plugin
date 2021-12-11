@@ -8,8 +8,13 @@ import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.whenNew;
 
+import hudson.model.Run;
+import hudson.model.TaskListener;
 import java.io.PrintStream;
-
+import jenkins.model.Jenkins;
+import jenkins.plugins.rocketchatnotifier.RocketChatNotifier;
+import jenkins.plugins.rocketchatnotifier.RocketClientImpl;
+import jenkins.plugins.rocketchatnotifier.RocketClientWebhookImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,13 +23,6 @@ import org.mockito.Mock;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import hudson.model.Run;
-import hudson.model.TaskListener;
-import jenkins.model.Jenkins;
-import jenkins.plugins.rocketchatnotifier.RocketChatNotifier;
-import jenkins.plugins.rocketchatnotifier.RocketClientImpl;
-import jenkins.plugins.rocketchatnotifier.RocketClientWebhookImpl;
 
 
 @RunWith(PowerMockRunner.class)
@@ -62,6 +60,8 @@ public class RocketSendTest {
     when(rocketDescMock.getUsername()).thenReturn("user");
     when(rocketDescMock.getPassword()).thenReturn("pass");
     when(rocketDescMock.getChannel()).thenReturn("default");
+    when(rocketDescMock.getWebhookToken()).thenReturn("default-webhook-token");
+    when(rocketDescMock.getWebhookTokenCredentialId()).thenReturn("default-webhook-token-credential-id");
   }
 
   @Test
@@ -118,5 +118,21 @@ public class RocketSendTest {
     verify(stepExecution, times(1)).getRocketClient("rocket.test.com", false, "user", "pass", "channel", null, null);
   }
 
-
+  @Test
+  public void shouldBeAbleToUseGlobalWebhookToken() throws Exception {
+    // given
+    RocketSendStep.RocketSendStepExecution stepExecution = spy(new RocketSendStep.RocketSendStepExecution());
+    RocketSendStep rocketSendStep = new RocketSendStep("message");
+    rocketSendStep.setUseGlobalWebhookToken(true);
+    stepExecution.step = rocketSendStep;
+    stepExecution.listener = taskListenerMock;
+    stepExecution.run = run;
+    when(Jenkins.getInstance()).thenReturn(jenkins);
+    // when
+    when(taskListenerMock.getLogger()).thenReturn(printStreamMock);
+    when(stepExecution.getRocketClient(anyString(), anyBoolean(), anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(rocketWebhookClientMock);
+    stepExecution.run();
+    // then
+    verify(stepExecution, times(1)).getRocketClient("rocket.test.com", false, "user", "pass", "default", "default-webhook-token", "default-webhook-token-credential-id");
+  }
 }
