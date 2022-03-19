@@ -30,6 +30,7 @@ import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.interceptor.RequirePOST;
 
 import javax.net.ssl.SSLHandshakeException;
 import java.io.IOException;
@@ -578,6 +579,7 @@ public class RocketChatNotifier extends Notifier {
       return "RocketChat Notifications";
     }
 
+    @RequirePOST
     public FormValidation doTestConnection(@QueryParameter("rocketServerUrl") final String rocketServerUrl,
                                            @QueryParameter("trustSSL") final String trustSSL,
                                            @QueryParameter("username") final String username,
@@ -586,6 +588,7 @@ public class RocketChatNotifier extends Notifier {
                                            @QueryParameter("buildServerUrl") final String buildServerUrl,
                                            @QueryParameter("webhookToken") final String token,
                                            @QueryParameter("webhookTokenCredentialId") final String webhookTokenCredentialId) throws FormException {
+      Jenkins.get().checkPermission(Jenkins.ADMINISTER);
       try {
         String targetServerUrl = rocketServerUrl + RocketClientImpl.API_PATH;
         if (StringUtils.isEmpty(rocketServerUrl)) {
