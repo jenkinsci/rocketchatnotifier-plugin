@@ -215,20 +215,6 @@
       <artifactId>jackson-databind</artifactId>
       <version>${jackson.version}</version>
     </dependency>
-    <!-- only here to prevent from being included inside hpi for hudson parent, not needed by project at all -->
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.17-atlassian-1</version>
-      <scope>provided</scope>
-    </dependency>
-    <!-- only here to prevent from being included inside hpi for hudson parent, not needed by project at all -->
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>1.0.4</version>
-      <scope>provided</scope>
-    </dependency>
     <!--
         Adding JNA to fix failing unit tests on Ubuntu 14.04
         https://bugs.launchpad.net/ubuntu/+source/libjna-java/+bug/1065253
