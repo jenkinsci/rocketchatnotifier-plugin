@@ -211,7 +211,7 @@ public class RocketChatClientCallBuilder {
   }
 
   private static ProxyConfiguration getProxyConfiguration(String serverUrl) {
-    Jenkins jenkinsInstance = Jenkins.getInstance();
+    Jenkins jenkinsInstance = Jenkins.getInstanceOrNull();
     return jenkinsInstance != null && jenkinsInstance.proxy != null && !NetworkUtils.isHostOnNoProxyList(serverUrl, jenkinsInstance.proxy)
       ? jenkinsInstance.proxy
       : null;

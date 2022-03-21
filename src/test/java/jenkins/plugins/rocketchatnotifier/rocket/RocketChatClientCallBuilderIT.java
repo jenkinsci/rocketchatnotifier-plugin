@@ -39,7 +39,7 @@ public class RocketChatClientCallBuilderIT {
     // given
     Jenkins jenkinsMock = mock(Jenkins.class);
     ProxyConfiguration proxyConf = mock(ProxyConfiguration.class);
-    when(Jenkins.getInstance()).thenReturn(jenkinsMock);
+    when(Jenkins.getInstanceOrNull()).thenReturn(jenkinsMock);
     jenkinsMock.proxy = proxyConf;
     RocketChatClientCallBuilder rocketCallBuilder = new RocketChatClientCallBuilder("http://localhost", false, "]\",", "]\",");
     // when

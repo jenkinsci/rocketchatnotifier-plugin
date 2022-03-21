@@ -60,7 +60,7 @@ public class RocketChatNotifierTest {
     PowerMockito.whenNew(RocketClientImpl.class).withAnyArguments().thenReturn(rocketClient);
     PowerMockito.whenNew(RocketClientWebhookImpl.class).withAnyArguments().thenReturn(rocketClientWithWebhook);
     when(jenkins.get()).thenReturn(jenkins);
-    PowerMockito.when(Jenkins.getInstance()).thenReturn(jenkins);
+    PowerMockito.when(Jenkins.getInstanceOrNull()).thenReturn(jenkins);
     File rootPath = new File(System.getProperty("java.io.tmpdir"));
     when(jenkins.getRootDir()).thenReturn(rootPath);
     DescriptorExtensionList mockList = mock(DescriptorExtensionList.class);

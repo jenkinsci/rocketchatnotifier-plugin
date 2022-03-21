@@ -26,7 +26,8 @@ public class MessageAttachmentTest {
   public void setup() throws Exception {
     MockitoAnnotations.initMocks(this);
     PowerMockito.mockStatic(Jenkins.class);
-    PowerMockito.when(Jenkins.getInstance()).thenReturn(jenkins);
+    PowerMockito.when(Jenkins.getInstanceOrNull()).thenReturn(jenkins);
+    PowerMockito.when(Jenkins.get()).thenReturn(jenkins);
 
   }
 

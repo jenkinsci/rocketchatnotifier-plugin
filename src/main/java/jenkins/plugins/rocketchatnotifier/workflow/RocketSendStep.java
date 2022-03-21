@@ -186,14 +186,14 @@ public class RocketSendStep extends AbstractStepImpl {
     }
 
     public ListBoxModel doFillWebhookTokenCredentialIdItems() {
-      if (!Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER)) {
+      if (!Jenkins.getInstanceOrNull().hasPermission(Jenkins.ADMINISTER)) {
         return new ListBoxModel();
       }
       return new StandardListBoxModel()
         .withEmptySelection()
         .withAll(lookupCredentials(
           StringCredentials.class,
-          Jenkins.getInstance(),
+          Jenkins.getInstanceOrNull(),
           ACL.SYSTEM,
           Collections.<DomainRequirement>emptyList())
         );
@@ -231,9 +231,9 @@ public class RocketSendStep extends AbstractStepImpl {
 
       //default to global config values if not set in step, but allow step to override all global settings
       Jenkins jenkins;
-      //Jenkins.getInstance() may return null, no message sent in that case
+      //Jenkins.getInstanceOrNull() may return null, no message sent in that case
       try {
-        jenkins = Jenkins.getInstance();
+        jenkins = Jenkins.getInstanceOrNull();
       }
       catch (NullPointerException ne) {
         listener.error(Messages.NotificationFailedWithException(ne));

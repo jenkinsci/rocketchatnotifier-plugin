@@ -1,8 +1,8 @@
 package jenkins.plugins.rocketchatnotifier;
 
-import hudson.model.AbstractProject;
 import hudson.model.Descriptor;
 import hudson.model.ItemGroup;
+import hudson.model.listeners.SaveableListener;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.junit.Before;
@@ -22,7 +22,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({Jenkins.class, RocketChatNotifier.DescriptorImpl.class})
+@PrepareForTest({Jenkins.class, SaveableListener.class, RocketChatNotifier.DescriptorImpl.class})
 public class RocketChatNotifierDecriptorImplTest {
 
   @Mock
@@ -32,24 +32,19 @@ public class RocketChatNotifierDecriptorImplTest {
   @Mock
   private StaplerRequest staplerRequest;
 
-  @Mock
-  private AbstractProject project;
-
-  @Mock
-  private ItemGroup parent;
-
   private Descriptor descriptor;
 
   @Before
   public void setup() throws Exception {
     MockitoAnnotations.initMocks(this);
     PowerMockito.mockStatic(Jenkins.class);
-    PowerMockito.when(Jenkins.getInstance()).thenReturn(jenkins);
+    PowerMockito.mockStatic(SaveableListener.class);
+    PowerMockito.when(Jenkins.getInstanceOrNull()).thenReturn(jenkins);
+    PowerMockito.when(Jenkins.get()).thenReturn(jenkins);
     File rootPath = new File(System.getProperty("java.io.tmpdir"));
     when(jenkins.getRootDir()).thenReturn(rootPath);
     when(staplerRequest.getParameter("buildServerUrl")).thenReturn("jenkins.example.com");
     descriptor = new RocketChatNotifier.DescriptorImpl();
-
   }
 
   @Test
