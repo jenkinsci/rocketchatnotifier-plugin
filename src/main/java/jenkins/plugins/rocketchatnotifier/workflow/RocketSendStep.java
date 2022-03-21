@@ -28,7 +28,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
@@ -44,7 +44,7 @@ public class RocketSendStep extends AbstractStepImpl {
 
   private static final Logger LOG = Logger.getLogger(RocketSendStep.class.getName());
 
-  @Nonnull
+  @NonNull
   private final String message;
   private String serverUrl;
   private boolean trustSSL;
@@ -59,7 +59,7 @@ public class RocketSendStep extends AbstractStepImpl {
   private boolean rawMessage;
   private List<MessageAttachment> attachments;
 
-  @Nonnull
+  @NonNull
   public String getMessage() {
     return message;
   }
@@ -164,7 +164,7 @@ public class RocketSendStep extends AbstractStepImpl {
   }
 
   @DataBoundConstructor
-  public RocketSendStep(@Nonnull String message) {
+  public RocketSendStep(@NonNull String message) {
     this.message = message;
   }
 

@@ -15,8 +15,8 @@ public class NetworkUtils {
    * @return whether or not the host is on the noProxy list
    */
   public static boolean isHostOnNoProxyList(String host, ProxyConfiguration proxy) {
-    if (host != null && proxy.noProxyHost != null) {
-      for (Pattern p : ProxyConfiguration.getNoProxyHostPatterns(proxy.noProxyHost)) {
+    if (host != null && proxy.getNoProxyHost() != null) {
+      for (Pattern p : ProxyConfiguration.getNoProxyHostPatterns(proxy.getNoProxyHost())) {
         if (p.matcher(URI.create(host).getHost()).matches()) {
           return true;
         }
