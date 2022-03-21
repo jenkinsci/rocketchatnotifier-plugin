@@ -233,7 +233,7 @@ public class RocketSendStep extends AbstractStepImpl {
       Jenkins jenkins;
       //Jenkins.getInstanceOrNull() may return null, no message sent in that case
       try {
-        jenkins = Jenkins.getInstanceOrNull();
+        jenkins = Jenkins.get();
       }
       catch (NullPointerException ne) {
         listener.error(Messages.NotificationFailedWithException(ne));

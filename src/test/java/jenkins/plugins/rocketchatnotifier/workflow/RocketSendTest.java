@@ -62,6 +62,7 @@ public class RocketSendTest {
     when(rocketDescMock.getUsername()).thenReturn("user");
     when(rocketDescMock.getPassword()).thenReturn("pass");
     when(rocketDescMock.getChannel()).thenReturn("default");
+    when(Jenkins.get()).thenReturn(jenkins);
   }
 
   @Test
@@ -72,7 +73,6 @@ public class RocketSendTest {
     stepExecution.step = rocketSendStep;
     stepExecution.listener = taskListenerMock;
     stepExecution.run = run;
-    when(Jenkins.getInstanceOrNull()).thenReturn(jenkins);
     // when
     when(taskListenerMock.getLogger()).thenReturn(printStreamMock);
     when(stepExecution.getRocketClient(anyString(), anyBoolean(), anyString(), anyString(), anyString(), Matchers.isNull(String.class), Matchers.isNull(String.class))).thenReturn(rocketClientMock);
@@ -91,7 +91,6 @@ public class RocketSendTest {
     stepExecution.step = rocketSendStep;
     stepExecution.listener = taskListenerMock;
     stepExecution.run = run;
-    when(Jenkins.getInstanceOrNull()).thenReturn(jenkins);
     // when
     when(taskListenerMock.getLogger()).thenReturn(printStreamMock);
     when(stepExecution.getRocketClient(anyString(), anyBoolean(), anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(rocketWebhookClientMock);
@@ -109,7 +108,6 @@ public class RocketSendTest {
     stepExecution.step = rocketSendStep;
     stepExecution.listener = taskListenerMock;
     stepExecution.run = run;
-    when(Jenkins.getInstanceOrNull()).thenReturn(jenkins);
     // when
     when(taskListenerMock.getLogger()).thenReturn(printStreamMock);
     when(stepExecution.getRocketClient(anyString(), anyBoolean(), anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(rocketClientMock);

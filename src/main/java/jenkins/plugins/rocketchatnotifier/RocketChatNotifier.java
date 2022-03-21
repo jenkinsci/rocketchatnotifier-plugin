@@ -650,14 +650,14 @@ public class RocketChatNotifier extends Notifier {
     }
 
     public ListBoxModel doFillWebhookTokenCredentialIdItems() {
-      if (!Jenkins.getInstanceOrNull().hasPermission(Jenkins.ADMINISTER)) {
+      if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
         return new ListBoxModel();
       }
       return new StandardListBoxModel()
         .withEmptySelection()
         .withAll(lookupCredentials(
           StringCredentials.class,
-          Jenkins.getInstanceOrNull(),
+          Jenkins.get(),
           ACL.SYSTEM,
           Collections.<DomainRequirement>emptyList())
         );
