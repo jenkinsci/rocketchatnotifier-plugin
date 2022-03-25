@@ -20,7 +20,7 @@
 		<junit.plugin.version>1.6</junit.plugin.version>
     <httpclient.version>4.5.13</httpclient.version>
     <unirest.version>1.4.9</unirest.version>
-    <jackson.version>2.13.2</jackson.version>
+    <jackson.version>2.13.2.1</jackson.version>
     <hamcrest.version>2.2</hamcrest.version>
     <jackson.version>2.13.2</jackson.version>
     <!-- testing libs -->
