@@ -30,7 +30,7 @@
     <mongo.port>27017</mongo.port>
     <!-- Maven Plugins -->
     <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
-    <maven-site-plugin.version>3.11.0</maven-site-plugin.version>
+    <maven-site-plugin.version>3.12.0</maven-site-plugin.version>
     <maven-gitflow-plugin.version>1.16.0</maven-gitflow-plugin.version>
 
   </properties>
