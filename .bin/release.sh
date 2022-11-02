@@ -6,5 +6,5 @@ git branch -D master
  git add CHANGELOG.md && \
  git commit -m "Changelog" && \
  ./mvnw gitflow:release-finish -DnoDeploy=true && \
- git push origin master && git push --tags && \
+ git push origin main && git push --tags && \
  git checkout develop
