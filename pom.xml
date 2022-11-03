@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.48</version>
+    <version>4.49</version>
     <relativePath />
   </parent>
 
@@ -27,7 +27,7 @@
     <junit.plugin.version>1.6</junit.plugin.version>
     <httpclient.version>4.5.13</httpclient.version>
     <unirest.version>1.4.9</unirest.version>
-    <jackson.version>2.13.4</jackson.version>
+    <jackson.version>2.13.4.2</jackson.version>
     <hamcrest.version>2.2</hamcrest.version>
     <jackson.version>2.13.4</jackson.version>
     <!-- testing libs -->
@@ -37,7 +37,7 @@
     <mongo.port>27017</mongo.port>
     <!-- Maven Plugins -->
     <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
-    <maven-site-plugin.version>3.11.0</maven-site-plugin.version>
+    <maven-site-plugin.version>3.12.1</maven-site-plugin.version>
     <maven-gitflow-plugin.version>1.19.0</maven-gitflow-plugin.version>
 
   </properties>
@@ -221,7 +221,7 @@
     <dependency>
       <groupId>net.java.dev.jna</groupId>
       <artifactId>jna</artifactId>
-      <version>5.11.0</version>
+      <version>5.12.1</version>
     </dependency>
     <dependency>
       <groupId>com.googlecode.json-simple</groupId>
