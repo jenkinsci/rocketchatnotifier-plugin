@@ -333,8 +333,8 @@
       <dependency>
         <!-- Pick up common dependencies for the selected LTS line: https://github.com/jenkinsci/bom#usage -->
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.289.x</artifactId>
-        <version>1500.ve4d05cd32975</version>
+        <artifactId>bom-2.332.x</artifactId>
+        <version>1678.vc1feb_6a_3c0f1</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
