@@ -10,8 +10,7 @@ import org.mockserver.integration.ClientAndServer;
 import static org.mockserver.model.HttpClassCallback.callback;
 import static org.mockserver.model.HttpRequest.request;
 
-
-public class RocketChatClientImplAcceptanceTest {
+public class RocketChatClientImplIT {
 
   private static ClientAndServer mockServer;
 
