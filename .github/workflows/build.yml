@@ -5,9 +5,13 @@ on:
   pull_request:
 
 permissions:
+  id-token: write # This is required for requesting the JWT
   security-events: write
   contents: read
-  actions: read
+  actions: read # This is required for actions/checkout
+  issues: write
+  pull-requests: write
+  checks: write # needed for spotbugs
 
 jobs:
   build:
@@ -38,6 +42,9 @@ jobs:
           distribution: 'adopt'
       - name: Build with Maven
         run: ./mvnw --batch-mode clean install
+      - uses: jwgmeligmeyling/spotbugs-github-action@master
+        with:
+          path: '**/spotbugsXml.xml'
 
   security-scan:
     uses: jenkins-infra/jenkins-security-scan/.github/workflows/jenkins-security-scan.yaml@v2
