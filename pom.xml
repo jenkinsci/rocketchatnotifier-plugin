@@ -24,7 +24,7 @@
     <failsafeArgLine/>
     <skipITs>false</skipITs>
     <!-- Project Libs-->
-    <junit.plugin.version>1.6</junit.plugin.version>
+    <junit.plugin.version>1214.va_2f9db_3e6de0</junit.plugin.version>
     <httpclient.version>4.5.14</httpclient.version>
     <unirest.version>1.4.9</unirest.version>
     <jackson.version>2.15.1</jackson.version>
