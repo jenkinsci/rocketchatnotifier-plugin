@@ -38,7 +38,7 @@
     <!-- Maven Plugins -->
     <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
     <maven-site-plugin.version>3.12.1</maven-site-plugin.version>
-    <maven-gitflow-plugin.version>1.20.0</maven-gitflow-plugin.version>
+    <maven-gitflow-plugin.version>1.21.0</maven-gitflow-plugin.version>
 
   </properties>
 
