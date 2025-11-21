@@ -23,7 +23,7 @@ import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -113,7 +113,7 @@ public class RocketChatClientImplTest {
     final Response errorResponse = new Response();
     errorResponse.setSuccess(false);
     when(callBuilder.buildCall(RocketChatRestApiV1.Info)).thenReturn(infoResponse);
-    when(callBuilder.buildCall(any(RocketChatRestApiV1.class), any(RocketChatQueryParams.class), any(Map.class))).thenReturn(errorResponse);
+    when(callBuilder.buildCall(any(RocketChatRestApiV1.class), any(), any(Map.class))).thenReturn(errorResponse);
     // when
     rocketChatClient.send("room", "message", null, null, null);
     // then error
@@ -168,14 +168,14 @@ public class RocketChatClientImplTest {
 
   private Response mockSuccess() throws Exception {
     final Response response = mockInfoRequest();
-    when(callBuilder.buildCall(any(RocketChatRestApiV1.class), any(RocketChatQueryParams.class), any(Map.class))).thenReturn(response);
+    when(callBuilder.buildCall(any(RocketChatRestApiV1.class), any(), any(Map.class))).thenReturn(response);
     return response;
   }
 
   private Set<String> mockSuccessAndCollectChannels() throws RocketClientException {
     final Response infoResponse = mockInfoRequest();
     final Set<String> collectedTargetChannels = new HashSet<>();
-    when(this.callBuilder.buildCall(any(RocketChatRestApiV1.class), any(RocketChatQueryParams.class), any(Map.class)))
+    when(this.callBuilder.buildCall(any(RocketChatRestApiV1.class), any(), any(Map.class)))
       .then(new Answer<Response>() {
         @Override
         public Response answer(InvocationOnMock invocationOnMock) throws Throwable {

@@ -31,7 +31,7 @@
     <hamcrest.version>2.2</hamcrest.version>
     <jackson.version>2.15.2</jackson.version>
     <!-- testing libs -->
-    <powermock.version>1.7.4</powermock.version>
+    <powermock.version>2.0.9</powermock.version>
     <!-- testing config -->
     <rocket.port>44443</rocket.port>
     <mongo.port>27017</mongo.port>
@@ -270,8 +270,8 @@
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
-      <version>1.10.19</version>
+      <artifactId>mockito-core</artifactId>
+      <version>3.12.4</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -288,7 +288,7 @@
     </dependency>
     <dependency>
       <groupId>org.powermock</groupId>
-      <artifactId>powermock-api-mockito</artifactId>
+      <artifactId>powermock-api-mockito2</artifactId>
       <version>${powermock.version}</version>
       <scope>test</scope>
     </dependency>

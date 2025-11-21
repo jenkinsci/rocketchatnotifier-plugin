@@ -5,7 +5,7 @@ import hudson.model.Run;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -51,7 +51,6 @@ public class BuildUtilsTest {
   @Test
   public void shouldReturnNullIfPreviousBuildIsStillRunning() {
     given(run.getPreviousBuild()).willReturn(firstRun);
-    given(firstRun.getResult()).willReturn(Result.SUCCESS);
     given(firstRun.isBuilding()).willReturn(true);
 
     Result result = buildUtils.findPreviousBuildResult(run);

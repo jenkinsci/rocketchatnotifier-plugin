@@ -1,7 +1,8 @@
 package jenkins.plugins.rocketchatnotifier.workflow;
 
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -18,7 +19,6 @@ import jenkins.plugins.rocketchatnotifier.RocketClientWebhookImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -75,7 +75,7 @@ public class RocketSendTest {
     stepExecution.run = run;
     // when
     when(taskListenerMock.getLogger()).thenReturn(printStreamMock);
-    when(stepExecution.getRocketClient(anyString(), anyBoolean(), anyString(), anyString(), anyString(), Matchers.isNull(String.class), Matchers.isNull(String.class))).thenReturn(rocketClientMock);
+    when(stepExecution.getRocketClient(anyString(), anyBoolean(), anyString(), anyString(), anyString(), isNull(), isNull())).thenReturn(rocketClientMock);
     stepExecution.run();
     // then
     verify(stepExecution, times(1)).getRocketClient("rocket.test.com", false, "user", "pass", "default", null, null);
