@@ -35,7 +35,7 @@ jobs:
           java-version: ${{ matrix.java }}
           distribution: 'adopt'
       - name: Run Tests
-        run: ./mvnw clean verify
+        run: ./mvnw --no-transfer-progress clean verify
 
   security-scan:
     uses: jenkins-infra/jenkins-security-scan/.github/workflows/jenkins-security-scan.yaml@v2
