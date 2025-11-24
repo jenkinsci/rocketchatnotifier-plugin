@@ -7,7 +7,8 @@ import com.mashape.unirest.request.GetRequest;
 import com.mashape.unirest.request.HttpRequestWithBody;
 import com.mashape.unirest.request.body.MultipartBody;
 import jenkins.plugins.rocketchatnotifier.rocket.errorhandling.RocketClientException;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
@@ -66,7 +67,7 @@ public class RocketChatBasicCallAuthenticationTest {
     assertThat(sampleCall, is(equalTo("https://example.com/api/v1/channels.list")));
   }
 
-  @Test(expected = RocketClientException.class)
+  @Test
   public void shouldAutoPrefixWithHttpsIfNotGiven() throws Exception {
     try (MockedStatic<Unirest> unirestMockedStatic = Mockito.mockStatic(Unirest.class)) {
       HttpResponse<JsonNode> response = mock(HttpResponse.class);
@@ -85,7 +86,8 @@ public class RocketChatBasicCallAuthenticationTest {
       when(getResponse.getStatus()).thenReturn(401);
       when(getRequest.asJson()).thenReturn(getResponse);
 
-      new RocketChatBasicCallAuthentication("example.com", "a", "b").doAuthentication();
+      Assertions.assertThrowsExactly(RocketClientException.class, () ->
+        new RocketChatBasicCallAuthentication("example.com", "a", "b").doAuthentication());
     }
   }
 }

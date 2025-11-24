@@ -9,22 +9,20 @@ import org.htmlunit.html.HtmlPage;
 import org.htmlunit.html.HtmlSelect;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 import org.jenkinsci.plugins.plaincredentials.impl.StringCredentialsImpl;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static net.sf.ezmorph.test.ArrayAssertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@WithJenkins
 public class RocketChatNotifierWithJenkinsTest {
 
-  @Rule
-  public JenkinsRule j = new JenkinsRule();
-
   @Test
-  public void testConfigurationRoundTrip() throws Exception {
+  public void testConfigurationRoundTrip(JenkinsRule j) throws Exception {
 
     StringCredentials stringCredentials = new StringCredentialsImpl(CredentialsScope.GLOBAL, "id 1", "description 1", Secret.fromString("secret 1"));
     SystemCredentialsProvider.getInstance().getCredentials().add(stringCredentials);

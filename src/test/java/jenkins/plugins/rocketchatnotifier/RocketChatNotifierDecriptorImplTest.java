@@ -3,9 +3,9 @@ package jenkins.plugins.rocketchatnotifier;
 import hudson.model.Descriptor;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.kohsuke.stapler.StaplerRequest;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -33,7 +33,7 @@ public class RocketChatNotifierDecriptorImplTest {
 
   private Descriptor descriptor;
 
-  @Before
+  @BeforeEach
   public void setup() throws Exception {
     closeableList.add(MockitoAnnotations.openMocks(this));
 
@@ -47,7 +47,7 @@ public class RocketChatNotifierDecriptorImplTest {
     descriptor = new RocketChatNotifier.DescriptorImpl();
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     for (AutoCloseable autoCloseable : closeableList) {
       if (autoCloseable != null) {

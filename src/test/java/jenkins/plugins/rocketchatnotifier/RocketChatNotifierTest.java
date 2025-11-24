@@ -6,9 +6,9 @@ import hudson.model.BuildListener;
 import jenkins.model.Jenkins;
 import jenkins.model.JenkinsLocationConfiguration;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -16,7 +16,6 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -51,7 +50,7 @@ public class RocketChatNotifierTest {
 
   private final List<AutoCloseable> closeableList = new ArrayList<>();
 
-  @Before
+  @BeforeEach
   public void setup() {
     closeableList.add(MockitoAnnotations.openMocks(this));
 
@@ -74,7 +73,7 @@ public class RocketChatNotifierTest {
     };
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     for (AutoCloseable autoCloseable : closeableList) {
       if (autoCloseable != null) {

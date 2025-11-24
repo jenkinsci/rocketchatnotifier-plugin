@@ -3,13 +3,11 @@ package jenkins.plugins.rocketchatnotifier;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import jenkins.model.Jenkins;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +19,6 @@ import static org.mockito.Mockito.when;
 /**
  * @author Martin Reinhardt (hypery2k)
  */
-@RunWith(MockitoJUnitRunner.class)
-//@PrepareForTest({AbstractItem.class})
 public class MessageBuilderTest {
 
   @Mock
@@ -39,7 +35,7 @@ public class MessageBuilderTest {
 
   private final List<AutoCloseable> closeableList = new ArrayList<>();
 
-  @Before
+  @BeforeEach
   public void setup() throws Exception {
     closeableList.add(MockitoAnnotations.openMocks(this));
     when(build.getProject()).thenReturn(project);
@@ -48,7 +44,7 @@ public class MessageBuilderTest {
     when(build.getDisplayName()).thenReturn("test-job");
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     for (AutoCloseable autoCloseable : closeableList) {
       if (autoCloseable != null) {

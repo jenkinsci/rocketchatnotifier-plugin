@@ -2,9 +2,10 @@ package jenkins.plugins.rocketchatnotifier.rocket;
 
 import jenkins.plugins.rocketchatnotifier.model.Room;
 import jenkins.plugins.rocketchatnotifier.rocket.errorhandling.RocketClientException;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockserver.client.MockServerClient;
 import org.mockserver.netty.MockServer;
 
@@ -17,7 +18,7 @@ public class RocketChatClientImplAcceptanceTest {
   private static MockServer mockServer;
   private static MockServerClient mockServerClient;
 
-  @BeforeClass
+  @BeforeAll
   public static void startServer() {
     mockServer = new MockServer(1080);
     mockServerClient = new MockServerClient("localhost", mockServer.getLocalPort());
@@ -39,20 +40,21 @@ public class RocketChatClientImplAcceptanceTest {
     );
   }
 
-  @AfterClass
+  @AfterAll
   public static void stopServer() {
     mockServer.stop();
     mockServerClient.stop();
   }
 
-  @Test(expected = RocketClientException.class)
+  @Test
   public void shouldFailWithSSLError() throws Exception {
     // given
     final RocketChatClientImpl rocketChatClient = new RocketChatClientImpl("127.0.0.1:1080", false, "", "");
     final Room room = new Room();
     room.setName("room");
     // when
-    rocketChatClient.send(room, "message");
+    Assertions.assertThrowsExactly(RocketClientException.class, () ->
+      rocketChatClient.send(room, "message"));
     // then no error
   }
 

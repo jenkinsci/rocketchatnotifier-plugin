@@ -1,8 +1,8 @@
 package jenkins.plugins.rocketchatnotifier.workflow;
 
 import jenkins.plugins.rocketchatnotifier.model.MessageAttachment;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +21,8 @@ public class RocketSendExecutionTest {
     attachments.add(messageAttachment);
     List<Map<String, Object>> maps = MessageAttachment.convertMessageAttachmentsToMaps(attachments);
 
-    Assert.assertNotNull(maps);
-    Assert.assertTrue(maps.get(0).containsKey("author_name"));
+    Assertions.assertNotNull(maps);
+    Assertions.assertTrue(maps.get(0).containsKey("author_name"));
 
   }
 
@@ -33,8 +33,8 @@ public class RocketSendExecutionTest {
     attachments.add(messageAttachment);
     List<Map<String, Object>> maps = MessageAttachment.convertMessageAttachmentsToMaps(attachments);
 
-    Assert.assertNotNull(maps);
-    Assert.assertFalse(maps.get(0).containsKey("author_name"));
+    Assertions.assertNotNull(maps);
+    Assertions.assertFalse(maps.get(0).containsKey("author_name"));
   }
 
   @Test
@@ -50,10 +50,10 @@ public class RocketSendExecutionTest {
     attachments.add(messageAttachment2);
     List<Map<String, Object>> maps = MessageAttachment.convertMessageAttachmentsToMaps(attachments);
 
-    Assert.assertNotNull(maps);
-    Assert.assertEquals(2, maps.size());
-    Assert.assertEquals("yolo", maps.get(0).get("text"));
-    Assert.assertEquals("http://github.com", maps.get(1).get("message_link"));
+    Assertions.assertNotNull(maps);
+    Assertions.assertEquals(2, maps.size());
+    Assertions.assertEquals("yolo", maps.get(0).get("text"));
+    Assertions.assertEquals("http://github.com", maps.get(1).get("message_link"));
 
   }
 

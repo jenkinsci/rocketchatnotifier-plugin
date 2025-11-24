@@ -18,9 +18,9 @@ import jenkins.model.Jenkins;
 import jenkins.plugins.rocketchatnotifier.RocketChatNotifier;
 import jenkins.plugins.rocketchatnotifier.RocketClientImpl;
 import jenkins.plugins.rocketchatnotifier.RocketClientWebhookImpl;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -53,7 +53,7 @@ public class RocketSendTest {
   private final List<AutoCloseable> closeableList = new ArrayList<>();
 
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     closeableList.add(MockitoAnnotations.openMocks(this));
 
@@ -72,7 +72,7 @@ public class RocketSendTest {
     when(rocketDescMock.getWebhookTokenCredentialId()).thenReturn("default-webhook-token-credential-id");
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     for (AutoCloseable autoCloseable : closeableList) {
       if (autoCloseable != null) {

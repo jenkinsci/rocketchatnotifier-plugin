@@ -3,9 +3,10 @@ package jenkins.plugins.rocketchatnotifier.rocket;
 import jenkins.plugins.rocketchatnotifier.model.Response;
 import jenkins.plugins.rocketchatnotifier.model.Room;
 import jenkins.plugins.rocketchatnotifier.rocket.errorhandling.RocketClientException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -18,8 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -34,7 +35,7 @@ public class RocketChatClientImplTest {
 
   private final List<AutoCloseable> closeableList = new ArrayList<>();
 
-  @Before
+  @BeforeEach
   public void setup() throws Exception {
     callBuilder = mock(RocketChatClientCallBuilder.class);
     closeableList.add(Mockito.mockConstruction(RocketChatClientCallBuilder.class, (builder,context) -> {
@@ -43,7 +44,7 @@ public class RocketChatClientImplTest {
     rocketChatClient = new RocketChatClientImpl("", false, "", "");
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     for (AutoCloseable autoCloseable : closeableList) {
       if (autoCloseable != null) {
@@ -101,18 +102,19 @@ public class RocketChatClientImplTest {
     // then no error
   }
 
-  @Test(expected = RocketClientException.class)
+  @Test
   public void shouldFailOnEmptyResponseOnVersionInfo() throws Exception {
     // given
     final Response errorResponse = new Response();
     errorResponse.setSuccess(false);
     when(callBuilder.buildCall(RocketChatRestApiV1.Info)).thenReturn(errorResponse);
     // when
-    rocketChatClient.getInfo();
+    Assertions.assertThrowsExactly(RocketClientException.class, () ->
+      rocketChatClient.getInfo());
     // then error
   }
 
-  @Test(expected = RocketClientException.class)
+  @Test
   public void shouldFailOnEmptyResponseOnSendMessage() throws Exception {
     // given
     final Response infoResponse = new Response();
@@ -123,7 +125,8 @@ public class RocketChatClientImplTest {
     when(callBuilder.buildCall(RocketChatRestApiV1.Info)).thenReturn(infoResponse);
     when(callBuilder.buildCall(any(RocketChatRestApiV1.class), any(), any(Map.class))).thenReturn(errorResponse);
     // when
-    rocketChatClient.send("room", "message", null, null, null);
+    Assertions.assertThrowsExactly(RocketClientException.class, () ->
+      rocketChatClient.send("room", "message", null, null, null));
     // then error
   }
 
@@ -134,7 +137,7 @@ public class RocketChatClientImplTest {
     // when
     rocketChatClient.send("my-channel", "message");
     // then
-    assertEquals(collectedTargetChannels.size(), 1);
+    assertEquals(1, collectedTargetChannels.size());
     assertTrue(collectedTargetChannels.contains("#my-channel"));
   }
 

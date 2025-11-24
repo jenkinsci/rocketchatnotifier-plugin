@@ -3,7 +3,8 @@ package jenkins.plugins.rocketchatnotifier.rocket;
 import hudson.ProxyConfiguration;
 import jenkins.model.Jenkins;
 import jenkins.plugins.rocketchatnotifier.rocket.errorhandling.RocketClientException;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
@@ -11,15 +12,16 @@ import static org.mockito.Mockito.mock;
 
 public class RocketChatClientCallBuilderIT {
 
-  @Test(expected = RocketClientException.class)
+  @Test
   public void shouldEscapeSpecialCharacters() throws Exception {
     // given
     RocketChatClientCallBuilder rocketCallBuilder = new RocketChatClientCallBuilder("http://localhost", false, "]\",", "]\",");
     // when
-    rocketCallBuilder.buildCall(RocketChatRestApiV1.ChannelsList);
+    Assertions.assertThrowsExactly(RocketClientException.class, () ->
+      rocketCallBuilder.buildCall(RocketChatRestApiV1.ChannelsList));
     // then error
   }
-  @Test(expected = RocketClientException.class)
+  @Test
   public void shouldWorkWithProxy() throws Exception {
     // given
     Jenkins jenkinsMock = mock(Jenkins.class);
@@ -31,7 +33,8 @@ public class RocketChatClientCallBuilderIT {
       jenkinsMock.proxy = proxyConf;
       RocketChatClientCallBuilder rocketCallBuilder = new RocketChatClientCallBuilder("http://localhost", false, "]\",", "]\",");
       // when
-      rocketCallBuilder.buildCall(RocketChatRestApiV1.ChannelsList);
+      Assertions.assertThrowsExactly(RocketClientException.class, () ->
+        rocketCallBuilder.buildCall(RocketChatRestApiV1.ChannelsList));
       // then error
     }
   }

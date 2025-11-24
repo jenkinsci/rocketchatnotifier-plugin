@@ -2,9 +2,9 @@ package jenkins.plugins.rocketchatnotifier.model;
 
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -17,14 +17,14 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class MessageAttachmentTest {
+class MessageAttachmentTest {
 
   @Mock
   private Jenkins jenkins;
 
   private final List<AutoCloseable> closeableList = new ArrayList<>();
 
-  @Before
+  @BeforeEach
   public void setup() throws Exception {
     closeableList.add(MockitoAnnotations.openMocks(this));
 
@@ -33,7 +33,7 @@ public class MessageAttachmentTest {
     closeableList.add(jenkinsMockedStatic);
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     for (AutoCloseable autoCloseable : closeableList) {
       if (autoCloseable != null) {
@@ -43,7 +43,7 @@ public class MessageAttachmentTest {
   }
 
   @Test
-  public void fromJSONWithAllFields() {
+  void fromJSONWithAllFields() {
     MessageAttachment messageAttachment = new MessageAttachment("test");
     messageAttachment.setColor("color");
     messageAttachment.setText("text");
@@ -62,7 +62,7 @@ public class MessageAttachmentTest {
   }
 
   @Test
-  public void fromJSONWithRequiredFields() {
+  void fromJSONWithRequiredFields() {
     MessageAttachment messageAttachment = new MessageAttachment("test");
     assertThat(MessageAttachment.fromJSON(JSONObject.fromObject(messageAttachment)), is(equalTo(messageAttachment)));
   }
