@@ -240,11 +240,9 @@ public class RocketSendStep extends AbstractStepImpl {
 
       //default to global config values if not set in step, but allow step to override all global settings
       Jenkins jenkins;
-      //Jenkins.getInstanceOrNull() may return null, no message sent in that case
       try {
         jenkins = Jenkins.get();
-      }
-      catch (NullPointerException ne) {
+      } catch (IllegalStateException ne) {
         listener.error(Messages.NotificationFailedWithException(ne));
         return null;
       }
