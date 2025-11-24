@@ -3,16 +3,13 @@ package jenkins.plugins.rocketchatnotifier.rocket;
 import jenkins.plugins.rocketchatnotifier.model.Response;
 import jenkins.plugins.rocketchatnotifier.model.Room;
 import jenkins.plugins.rocketchatnotifier.rocket.errorhandling.RocketClientException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,8 +25,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({RocketChatClientCallBuilder.class, RocketChatClientImpl.class})
 public class RocketChatClientImplTest {
 
   private RocketChatClientImpl rocketChatClient;
@@ -37,11 +32,24 @@ public class RocketChatClientImplTest {
   @Mock
   private RocketChatClientCallBuilder callBuilder;
 
+  private final List<AutoCloseable> closeableList = new ArrayList<>();
+
   @Before
   public void setup() throws Exception {
     callBuilder = mock(RocketChatClientCallBuilder.class);
-    PowerMockito.whenNew(RocketChatClientCallBuilder.class).withArguments(Mockito.anyString(), Mockito.anyBoolean(), Mockito.anyString(), Mockito.anyString()).thenReturn(callBuilder);
+    closeableList.add(Mockito.mockConstruction(RocketChatClientCallBuilder.class, (builder,context) -> {
+      callBuilder = builder;
+    }));
     rocketChatClient = new RocketChatClientImpl("", false, "", "");
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    for (AutoCloseable autoCloseable : closeableList) {
+      if (autoCloseable != null) {
+        autoCloseable.close();
+      }
+    }
   }
 
   @Test

@@ -2,33 +2,44 @@ package jenkins.plugins.rocketchatnotifier.model;
 
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({Jenkins.class, MessageAttachment.class})
 public class MessageAttachmentTest {
 
   @Mock
   private Jenkins jenkins;
 
+  private final List<AutoCloseable> closeableList = new ArrayList<>();
+
   @Before
   public void setup() throws Exception {
-    MockitoAnnotations.initMocks(this);
-    PowerMockito.mockStatic(Jenkins.class);
-    PowerMockito.when(Jenkins.getInstanceOrNull()).thenReturn(jenkins);
-    PowerMockito.when(Jenkins.get()).thenReturn(jenkins);
+    closeableList.add(MockitoAnnotations.openMocks(this));
 
+    MockedStatic<Jenkins> jenkinsMockedStatic = Mockito.mockStatic(Jenkins.class);
+    jenkinsMockedStatic.when(Jenkins::get).thenReturn(jenkins);
+    closeableList.add(jenkinsMockedStatic);
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    for (AutoCloseable autoCloseable : closeableList) {
+      if (autoCloseable != null) {
+        autoCloseable.close();
+      }
+    }
   }
 
   @Test

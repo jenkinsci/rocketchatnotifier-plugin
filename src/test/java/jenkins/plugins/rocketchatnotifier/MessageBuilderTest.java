@@ -3,12 +3,16 @@ package jenkins.plugins.rocketchatnotifier;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import jenkins.model.Jenkins;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,15 +37,24 @@ public class MessageBuilderTest {
   @Mock
   private Jenkins parent;
 
+  private final List<AutoCloseable> closeableList = new ArrayList<>();
+
   @Before
   public void setup() throws Exception {
-    MockitoAnnotations.initMocks(this);
+    closeableList.add(MockitoAnnotations.openMocks(this));
     when(build.getProject()).thenReturn(project);
-    when(parent.getFullDisplayName()).thenReturn("test-project");
-    when(project.getParent()).thenReturn(parent);
     when(project.getLastBuild()).thenReturn(build);
     when(project.getFullDisplayName()).thenReturn("test-project");
     when(build.getDisplayName()).thenReturn("test-job");
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    for (AutoCloseable autoCloseable : closeableList) {
+      if (autoCloseable != null) {
+        autoCloseable.close();
+      }
+    }
   }
 
   @Test
