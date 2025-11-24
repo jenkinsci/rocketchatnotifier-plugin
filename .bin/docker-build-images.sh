@@ -2,4 +2,4 @@
 
 source ./.bin/docker-env.sh
 
-docker-compose create
+docker compose create
