@@ -5,7 +5,8 @@ import jenkins.plugins.rocketchatnotifier.rocket.errorhandling.RocketClientExcep
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockserver.integration.ClientAndServer;
+import org.mockserver.client.MockServerClient;
+import org.mockserver.netty.MockServer;
 
 import static org.mockserver.model.HttpClassCallback.callback;
 import static org.mockserver.model.HttpRequest.request;
@@ -13,22 +14,25 @@ import static org.mockserver.model.HttpRequest.request;
 
 public class RocketChatClientImplAcceptanceTest {
 
-  private static ClientAndServer mockServer;
+  private static MockServer mockServer;
+  private static MockServerClient mockServerClient;
 
   @BeforeClass
   public static void startServer() {
-    mockServer = ClientAndServer.startClientAndServer(1080);
-    mockServer.when(
+    mockServer = new MockServer(1080);
+    mockServerClient = new MockServerClient("localhost", mockServer.getLocalPort());
+
+    mockServerClient.when(
       request().withPath("/api/v1/info")
     ).respond(
       callback().withCallbackClass("jenkins.plugins.rocketchatnotifier.rocket.expectations.InfoExpectationCallback")
     );
-    mockServer.when(
+    mockServerClient.when(
       request().withPath("/api/v1/login")
     ).respond(
       callback().withCallbackClass("jenkins.plugins.rocketchatnotifier.rocket.expectations.LoginExpectationCallback")
     );
-    mockServer.when(
+    mockServerClient.when(
       request().withPath("/api/v1/chat.postMessage")
     ).respond(
       callback().withCallbackClass("jenkins.plugins.rocketchatnotifier.rocket.expectations.MessageExpectationCallback")
@@ -38,6 +42,7 @@ public class RocketChatClientImplAcceptanceTest {
   @AfterClass
   public static void stopServer() {
     mockServer.stop();
+    mockServerClient.stop();
   }
 
   @Test(expected = RocketClientException.class)
