@@ -7,10 +7,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 import hudson.model.FreeStyleProject;
 import hudson.util.Secret;
-import junit.framework.Assert;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 import org.jenkinsci.plugins.plaincredentials.impl.StringCredentialsImpl;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -24,12 +22,6 @@ public class RocketChatNotifierWithJenkinsTest {
 
   @Rule
   public JenkinsRule j = new JenkinsRule();
-
-  @Before
-  public void setup(){
-    ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger)org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
-    root.setLevel(ch.qos.logback.classic.Level.INFO);
-  }
 
   @Test
   public void testConfigurationRoundTrip() throws Exception {
