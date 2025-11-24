@@ -1,11 +1,11 @@
 package jenkins.plugins.rocketchatnotifier.rocket;
 
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
-import com.mashape.unirest.request.HttpRequest;
 import jenkins.plugins.rocketchatnotifier.rocket.errorhandling.RocketClientException;
+import kong.unirest.HttpRequest;
+import kong.unirest.HttpResponse;
+import kong.unirest.JsonNode;
+import kong.unirest.Unirest;
+import kong.unirest.UnirestException;
 import org.json.JSONObject;
 
 /**

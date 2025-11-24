@@ -2,14 +2,14 @@ package jenkins.plugins.rocketchatnotifier.rocket;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
-import com.mashape.unirest.request.GetRequest;
 import jenkins.plugins.rocketchatnotifier.RocketClientImpl;
 import jenkins.plugins.rocketchatnotifier.model.Response;
 import jenkins.plugins.rocketchatnotifier.model.Room;
 import jenkins.plugins.rocketchatnotifier.model.User;
 import jenkins.plugins.rocketchatnotifier.rocket.errorhandling.RocketClientException;
+import kong.unirest.GetRequest;
+import kong.unirest.Unirest;
+import kong.unirest.UnirestException;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 

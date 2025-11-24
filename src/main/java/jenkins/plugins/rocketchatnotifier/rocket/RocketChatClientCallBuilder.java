@@ -2,15 +2,17 @@ package jenkins.plugins.rocketchatnotifier.rocket;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.request.GetRequest;
-import com.mashape.unirest.request.HttpRequestWithBody;
 import hudson.ProxyConfiguration;
 import jenkins.model.Jenkins;
 import jenkins.plugins.rocketchatnotifier.model.Response;
 import jenkins.plugins.rocketchatnotifier.rocket.errorhandling.RocketClientException;
 import jenkins.plugins.rocketchatnotifier.utils.NetworkUtils;
+import kong.unirest.GetRequest;
+import kong.unirest.HttpRequest;
+import kong.unirest.HttpRequestWithBody;
+import kong.unirest.HttpResponse;
+import kong.unirest.RequestBodyEntity;
+import kong.unirest.Unirest;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -74,8 +76,9 @@ public class RocketChatClientCallBuilder {
     this.objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     this.serverUrl = serverUrl;
 
+
     try {
-      Unirest.setHttpClient(createHttpClient(serverUrl, trustSSL));
+      Unirest.config().httpClient(createHttpClient(serverUrl, trustSSL));
     } catch (Exception e) {
       throw new RocketClientException(e);
     }
@@ -127,25 +130,28 @@ public class RocketChatClientCallBuilder {
 
   private Response buildPostCall(RocketChatRestApiV1 call, RocketChatQueryParams queryParams, Object body)
     throws RocketClientException {
-    HttpRequestWithBody req = Unirest.post(authentication.getUrlForRequest(call)).header("Content-Type",
+    HttpRequestWithBody requestWithBody = Unirest.post(authentication.getUrlForRequest(call)).header("Content-Type",
       "application/json");
 
     if (call.requiresAuth()) {
-      authentication.addAuthenticationDataToRequest(req);
+      authentication.addAuthenticationDataToRequest(requestWithBody);
     }
 
     if (queryParams != null && !queryParams.isEmpty()) {
       for (Entry<? extends String, ? extends String> e : queryParams.get().entrySet()) {
-        req.queryString(e.getKey(), e.getValue());
+        requestWithBody.queryString(e.getKey(), e.getValue());
       }
     }
 
     try {
 
+      HttpRequest request;
       if (body != null) {
-        req.body(objectMapper.writeValueAsString(body));
+        request = requestWithBody.body(objectMapper.writeValueAsString(body));
+      } else {
+        request = requestWithBody;
       }
-      HttpResponse<String> res = req.asString();
+      HttpResponse<String> res = request.asString();
 
       return objectMapper.readValue(res.getBody(), Response.class);
     } catch (Exception e) {

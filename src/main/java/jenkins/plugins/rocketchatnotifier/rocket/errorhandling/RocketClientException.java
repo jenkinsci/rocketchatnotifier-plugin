@@ -1,6 +1,6 @@
 package jenkins.plugins.rocketchatnotifier.rocket.errorhandling;
 
-import com.mashape.unirest.http.exceptions.UnirestException;
+import kong.unirest.UnirestException;
 
 public class RocketClientException extends Exception {
 

@@ -1,12 +1,12 @@
 package jenkins.plugins.rocketchatnotifier.rocket;
 
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.request.GetRequest;
-import com.mashape.unirest.request.HttpRequestWithBody;
-import com.mashape.unirest.request.body.MultipartBody;
 import jenkins.plugins.rocketchatnotifier.rocket.errorhandling.RocketClientException;
+import kong.unirest.GetRequest;
+import kong.unirest.HttpRequestWithBody;
+import kong.unirest.HttpResponse;
+import kong.unirest.JsonNode;
+import kong.unirest.MultipartBody;
+import kong.unirest.Unirest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
