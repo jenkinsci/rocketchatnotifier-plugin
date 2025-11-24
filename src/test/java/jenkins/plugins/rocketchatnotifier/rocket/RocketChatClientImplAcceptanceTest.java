@@ -20,17 +20,17 @@ public class RocketChatClientImplAcceptanceTest {
     mockServer = ClientAndServer.startClientAndServer(1080);
     mockServer.when(
       request().withPath("/api/v1/info")
-    ).callback(
+    ).respond(
       callback().withCallbackClass("jenkins.plugins.rocketchatnotifier.rocket.expectations.InfoExpectationCallback")
     );
     mockServer.when(
       request().withPath("/api/v1/login")
-    ).callback(
+    ).respond(
       callback().withCallbackClass("jenkins.plugins.rocketchatnotifier.rocket.expectations.LoginExpectationCallback")
     );
     mockServer.when(
       request().withPath("/api/v1/chat.postMessage")
-    ).callback(
+    ).respond(
       callback().withCallbackClass("jenkins.plugins.rocketchatnotifier.rocket.expectations.MessageExpectationCallback")
     );
   }
