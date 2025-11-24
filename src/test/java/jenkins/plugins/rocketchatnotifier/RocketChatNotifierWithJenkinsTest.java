@@ -2,11 +2,11 @@ package jenkins.plugins.rocketchatnotifier;
 
 import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.SystemCredentialsProvider;
-import com.gargoylesoftware.htmlunit.html.HtmlForm;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 import hudson.model.FreeStyleProject;
 import hudson.util.Secret;
+import org.htmlunit.html.HtmlForm;
+import org.htmlunit.html.HtmlPage;
+import org.htmlunit.html.HtmlSelect;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 import org.jenkinsci.plugins.plaincredentials.impl.StringCredentialsImpl;
 import org.junit.Rule;
@@ -84,10 +84,10 @@ public class RocketChatNotifierWithJenkinsTest {
     form.getTextAreaByName("customMessage").setText("custom message 2");
     // TODO: test attachments
     form.getSelectByName("commitInfoChoice").setSelectedIndex(2);
-    form.getInputByName("rocketServerUrl").setValueAttribute("rocket server url 2");
+    form.getInputByName("rocketServerUrl").setValue("rocket server url 2");
     form.getInputByName("trustSSL").setAttribute("checked", "checked");
-    form.getInputByName("channel").setValueAttribute("channel 2");
-    form.getInputByName("webhookToken").setValueAttribute("webhookToken 2");
+    form.getInputByName("channel").setValue("channel 2");
+    form.getInputByName("webhookToken").setValue("webhookToken 2");
     form.getSelectByName("_.webhookTokenCredentialId").setSelectedIndex(1);
 
     j.submit(form);
