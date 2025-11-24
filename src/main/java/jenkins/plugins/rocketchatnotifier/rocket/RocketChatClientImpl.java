@@ -10,8 +10,8 @@ import jenkins.plugins.rocketchatnotifier.model.Response;
 import jenkins.plugins.rocketchatnotifier.model.Room;
 import jenkins.plugins.rocketchatnotifier.model.User;
 import jenkins.plugins.rocketchatnotifier.rocket.errorhandling.RocketClientException;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.json.simple.JSONValue;
 
 import java.io.IOException;
 import java.security.cert.CertificateException;
@@ -43,7 +43,7 @@ public class RocketChatClientImpl implements RocketChatClient {
    * @param password  of the user to authenticate with
    */
   public RocketChatClientImpl(String serverUrl, boolean trustSSL, String user, String password) throws RocketClientException {
-    this.callBuilder = new RocketChatClientCallBuilder(serverUrl, trustSSL, JSONValue.escape(user), JSONValue.escape(password));
+    this.callBuilder = new RocketChatClientCallBuilder(serverUrl, trustSSL, StringEscapeUtils.escapeJson(user), StringEscapeUtils.escapeJson(password));
   }
 
   /**
