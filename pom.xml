@@ -213,15 +213,6 @@
       <artifactId>jackson-databind</artifactId>
       <version>${jackson.version}</version>
     </dependency>
-    <!--
-        Adding JNA to fix failing unit tests on Ubuntu 14.04
-        https://bugs.launchpad.net/ubuntu/+source/libjna-java/+bug/1065253
-    -->
-    <dependency>
-      <groupId>net.java.dev.jna</groupId>
-      <artifactId>jna</artifactId>
-      <version>5.12.1</version>
-    </dependency>
     <dependency>
       <groupId>com.googlecode.json-simple</groupId>
       <artifactId>json-simple</artifactId>
