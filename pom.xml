@@ -17,7 +17,7 @@
 
   <properties>
     <gitHubRepo>jenkinsci/${project.artifactId}</gitHubRepo>
-    <jenkins.version>2.492.3</jenkins.version>
+    <jenkins.version>2.504.3</jenkins.version>
     <java.level>17</java.level>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -287,8 +287,8 @@
       <dependency>
         <!-- Pick up common dependencies for the selected LTS line: https://github.com/jenkinsci/bom#usage -->
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.492.x</artifactId>
-        <version>4228.v0a_71308d905b_</version>
+        <artifactId>bom-2.504.x</artifactId>
+        <version>5701.va_b_018a_a_6b_0d3</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
