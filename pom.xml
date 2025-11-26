@@ -26,7 +26,6 @@
     <!-- Project Libs-->
     <junit.plugin.version>1.6</junit.plugin.version>
     <httpclient.version>4.5.14</httpclient.version>
-    <hamcrest.version>2.2</hamcrest.version>
     <!-- testing config -->
     <rocket.port>44443</rocket.port>
     <mongo.port>27017</mongo.port>
@@ -238,14 +237,8 @@
     </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-core</artifactId>
-      <version>${hamcrest.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-library</artifactId>
-      <version>${hamcrest.version}</version>
+      <artifactId>hamcrest</artifactId>
+      <version>3.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
