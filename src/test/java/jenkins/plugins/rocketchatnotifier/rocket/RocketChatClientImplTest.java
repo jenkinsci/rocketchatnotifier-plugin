@@ -3,16 +3,14 @@ package jenkins.plugins.rocketchatnotifier.rocket;
 import jenkins.plugins.rocketchatnotifier.model.Response;
 import jenkins.plugins.rocketchatnotifier.model.Room;
 import jenkins.plugins.rocketchatnotifier.rocket.errorhandling.RocketClientException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,15 +19,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({RocketChatClientCallBuilder.class, RocketChatClientImpl.class})
 public class RocketChatClientImplTest {
 
   private RocketChatClientImpl rocketChatClient;
@@ -37,11 +33,24 @@ public class RocketChatClientImplTest {
   @Mock
   private RocketChatClientCallBuilder callBuilder;
 
-  @Before
+  private final List<AutoCloseable> closeableList = new ArrayList<>();
+
+  @BeforeEach
   public void setup() throws Exception {
     callBuilder = mock(RocketChatClientCallBuilder.class);
-    PowerMockito.whenNew(RocketChatClientCallBuilder.class).withArguments(Mockito.anyString(), Mockito.anyBoolean(), Mockito.anyString(), Mockito.anyString()).thenReturn(callBuilder);
+    closeableList.add(Mockito.mockConstruction(RocketChatClientCallBuilder.class, (builder,context) -> {
+      callBuilder = builder;
+    }));
     rocketChatClient = new RocketChatClientImpl("", false, "", "");
+  }
+
+  @AfterEach
+  public void tearDown() throws Exception {
+    for (AutoCloseable autoCloseable : closeableList) {
+      if (autoCloseable != null) {
+        autoCloseable.close();
+      }
+    }
   }
 
   @Test
@@ -93,18 +102,19 @@ public class RocketChatClientImplTest {
     // then no error
   }
 
-  @Test(expected = RocketClientException.class)
+  @Test
   public void shouldFailOnEmptyResponseOnVersionInfo() throws Exception {
     // given
     final Response errorResponse = new Response();
     errorResponse.setSuccess(false);
     when(callBuilder.buildCall(RocketChatRestApiV1.Info)).thenReturn(errorResponse);
     // when
-    rocketChatClient.getInfo();
+    Assertions.assertThrowsExactly(RocketClientException.class, () ->
+      rocketChatClient.getInfo());
     // then error
   }
 
-  @Test(expected = RocketClientException.class)
+  @Test
   public void shouldFailOnEmptyResponseOnSendMessage() throws Exception {
     // given
     final Response infoResponse = new Response();
@@ -113,9 +123,10 @@ public class RocketChatClientImplTest {
     final Response errorResponse = new Response();
     errorResponse.setSuccess(false);
     when(callBuilder.buildCall(RocketChatRestApiV1.Info)).thenReturn(infoResponse);
-    when(callBuilder.buildCall(any(RocketChatRestApiV1.class), any(RocketChatQueryParams.class), any(Map.class))).thenReturn(errorResponse);
+    when(callBuilder.buildCall(any(RocketChatRestApiV1.class), any(), any(Map.class))).thenReturn(errorResponse);
     // when
-    rocketChatClient.send("room", "message", null, null, null);
+    Assertions.assertThrowsExactly(RocketClientException.class, () ->
+      rocketChatClient.send("room", "message", null, null, null));
     // then error
   }
 
@@ -126,7 +137,7 @@ public class RocketChatClientImplTest {
     // when
     rocketChatClient.send("my-channel", "message");
     // then
-    assertEquals(collectedTargetChannels.size(), 1);
+    assertEquals(1, collectedTargetChannels.size());
     assertTrue(collectedTargetChannels.contains("#my-channel"));
   }
 
@@ -168,14 +179,14 @@ public class RocketChatClientImplTest {
 
   private Response mockSuccess() throws Exception {
     final Response response = mockInfoRequest();
-    when(callBuilder.buildCall(any(RocketChatRestApiV1.class), any(RocketChatQueryParams.class), any(Map.class))).thenReturn(response);
+    when(callBuilder.buildCall(any(RocketChatRestApiV1.class), any(), any(Map.class))).thenReturn(response);
     return response;
   }
 
   private Set<String> mockSuccessAndCollectChannels() throws RocketClientException {
     final Response infoResponse = mockInfoRequest();
     final Set<String> collectedTargetChannels = new HashSet<>();
-    when(this.callBuilder.buildCall(any(RocketChatRestApiV1.class), any(RocketChatQueryParams.class), any(Map.class)))
+    when(this.callBuilder.buildCall(any(RocketChatRestApiV1.class), any(), any(Map.class)))
       .then(new Answer<Response>() {
         @Override
         public Response answer(InvocationOnMock invocationOnMock) throws Throwable {

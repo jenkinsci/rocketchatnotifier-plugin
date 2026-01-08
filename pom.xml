@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.49</version>
+    <version>5.28</version>
     <relativePath/>
   </parent>
 
@@ -17,21 +17,12 @@
 
   <properties>
     <gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>
-    <jenkins.version>2.387.3</jenkins.version>
-    <java.level>8</java.level>
+    <jenkins.version>2.504.3</jenkins.version>
+    <java.level>17</java.level>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <failsafeArgLine/>
     <skipITs>false</skipITs>
-    <!-- Project Libs-->
-    <junit.plugin.version>1.6</junit.plugin.version>
-    <httpclient.version>4.5.14</httpclient.version>
-    <unirest.version>1.4.9</unirest.version>
-    <jackson.version>2.16.1</jackson.version>
-    <hamcrest.version>2.2</hamcrest.version>
-    <jackson.version>2.15.2</jackson.version>
-    <!-- testing libs -->
-    <powermock.version>1.7.4</powermock.version>
     <!-- testing config -->
     <rocket.port>44443</rocket.port>
     <mongo.port>27017</mongo.port>
@@ -40,6 +31,7 @@
     <maven-site-plugin.version>3.12.1</maven-site-plugin.version>
     <maven-gitflow-plugin.version>1.21.0</maven-gitflow-plugin.version>
 
+    <enforcer.skipRules>bannedDependencies</enforcer.skipRules>
   </properties>
 
   <scm>
@@ -197,36 +189,23 @@
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>junit</artifactId>
-      <version>${junit.plugin.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <version>${httpclient.version}</version>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>apache-httpcomponents-client-4-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.mashape.unirest</groupId>
+      <groupId>com.konghq</groupId>
       <artifactId>unirest-java</artifactId>
-      <version>${unirest.version}</version>
+      <version>3.14.5</version>
     </dependency>
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>${jackson.version}</version>
-    </dependency>
-    <!--
-        Adding JNA to fix failing unit tests on Ubuntu 14.04
-        https://bugs.launchpad.net/ubuntu/+source/libjna-java/+bug/1065253
-    -->
-    <dependency>
-      <groupId>net.java.dev.jna</groupId>
-      <artifactId>jna</artifactId>
-      <version>5.12.1</version>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>jackson2-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.googlecode.json-simple</groupId>
-      <artifactId>json-simple</artifactId>
-      <version>1.1.1</version>
+      <groupId>io.jenkins.plugins</groupId>
+      <artifactId>commons-text-api</artifactId>
     </dependency>
     <!-- for workflow support -->
     <dependency>
@@ -246,11 +225,6 @@
       <artifactId>plain-credentials</artifactId>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.jenkins-ci.plugins.workflow</groupId>
       <artifactId>workflow-support</artifactId>
       <classifier>tests</classifier>
@@ -258,56 +232,28 @@
     </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-core</artifactId>
-      <version>${hamcrest.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-library</artifactId>
-      <version>${hamcrest.version}</version>
+      <artifactId>hamcrest</artifactId>
+      <version>3.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
-      <version>1.10.19</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-core</artifactId>
-      <version>${powermock.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-module-junit4</artifactId>
-      <version>${powermock.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-api-mockito</artifactId>
-      <version>${powermock.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-reflect</artifactId>
-      <version>${powermock.version}</version>
+      <artifactId>mockito-core</artifactId>
+      <version>5.20.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.mock-server</groupId>
       <artifactId>mockserver-netty</artifactId>
-      <version>3.11</version>
+      <version>5.15.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mock-server</groupId>
+      <artifactId>mockserver-client-java</artifactId>
+      <version>5.15.0</version>
       <scope>test</scope>
       <exclusions>
-        <exclusion>
-          <groupId>xerces</groupId>
-          <artifactId>xercesImpl</artifactId>
-        </exclusion>
         <exclusion>
           <groupId>org.apache.commons</groupId>
           <artifactId>commons-lang3</artifactId>
@@ -315,16 +261,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.mock-server</groupId>
-      <artifactId>mockserver-client-java</artifactId>
-      <version>3.11</version>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-params</artifactId>
       <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.apache.commons</groupId>
-          <artifactId>commons-lang3</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
   </dependencies>
 
@@ -333,8 +272,8 @@
       <dependency>
         <!-- Pick up common dependencies for the selected LTS line: https://github.com/jenkinsci/bom#usage -->
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.332.x</artifactId>
-        <version>1678.vc1feb_6a_3c0f1</version>
+        <artifactId>bom-2.504.x</artifactId>
+        <version>5701.va_b_018a_a_6b_0d3</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>

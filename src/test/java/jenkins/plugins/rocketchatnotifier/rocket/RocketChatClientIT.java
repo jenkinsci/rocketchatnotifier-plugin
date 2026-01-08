@@ -1,8 +1,8 @@
 package jenkins.plugins.rocketchatnotifier.rocket;
 
 import jenkins.plugins.rocketchatnotifier.model.Room;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,7 +19,7 @@ public class RocketChatClientIT {
 
   private RocketChatClient client;
 
-  @Before
+  @BeforeEach
   public void setup() throws Exception {
     this.client = new RocketChatClientImpl("http://localhost:44443/api/", false, "admin", "supersecret");
   }

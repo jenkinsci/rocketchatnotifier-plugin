@@ -1,34 +1,29 @@
 package jenkins.plugins.rocketchatnotifier;
 
-import hudson.DescriptorExtensionList;
 import hudson.EnvVars;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
-import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
 import jenkins.model.JenkinsLocationConfiguration;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({Jenkins.class, JenkinsLocationConfiguration.class, RocketClientImpl.class, RocketClientWebhookImpl.class, RocketChatNotifier.class})
 public class RocketChatNotifierTest {
 
   private static final String EXPECTED_URL = "rocket.example.com";
@@ -53,18 +48,18 @@ public class RocketChatNotifierTest {
 
   RocketChatNotifier notifier;
 
-  @Before
-  public void setup() throws Exception {
-    MockitoAnnotations.initMocks(this);
-    PowerMockito.mockStatic(Jenkins.class, JenkinsLocationConfiguration.class);
-    PowerMockito.whenNew(RocketClientImpl.class).withAnyArguments().thenReturn(rocketClient);
-    PowerMockito.whenNew(RocketClientWebhookImpl.class).withAnyArguments().thenReturn(rocketClientWithWebhook);
-    when(jenkins.get()).thenReturn(jenkins);
-    PowerMockito.when(Jenkins.getInstanceOrNull()).thenReturn(jenkins);
-    File rootPath = new File(System.getProperty("java.io.tmpdir"));
-    when(jenkins.getRootDir()).thenReturn(rootPath);
-    DescriptorExtensionList mockList = mock(DescriptorExtensionList.class);
-    when(jenkins.getDescriptorList(GlobalConfiguration.class)).thenReturn(mockList);
+  private final List<AutoCloseable> closeableList = new ArrayList<>();
+
+  @BeforeEach
+  public void setup() {
+    closeableList.add(MockitoAnnotations.openMocks(this));
+
+    MockedStatic<Jenkins> jenkinsMockedStatic = Mockito.mockStatic(Jenkins.class);
+    jenkinsMockedStatic.when(Jenkins::get).thenReturn(jenkins);
+    closeableList.add(jenkinsMockedStatic);
+
+    closeableList.add(Mockito.mockConstruction(RocketClientImpl.class));
+
     notifier = new RocketChatNotifier(
       EXPECTED_URL, false,
       "user", "password",
@@ -78,17 +73,30 @@ public class RocketChatNotifierTest {
     };
   }
 
+  @AfterEach
+  public void tearDown() throws Exception {
+    for (AutoCloseable autoCloseable : closeableList) {
+      if (autoCloseable != null) {
+        autoCloseable.close();
+      }
+    }
+  }
+
   @Test
   public void shouldFallbackToJenkinsUrlIfBuildServerUrlIsNotProvived() throws Exception {
     // given
     notifier.setBuildServerUrl(null);
-    JenkinsLocationConfiguration locationConfigMock = PowerMockito.mock(JenkinsLocationConfiguration.class);
-    PowerMockito.when(locationConfigMock.getUrl()).thenReturn(EXPECTED_URL);
-    PowerMockito.when(JenkinsLocationConfiguration.get()).thenReturn(locationConfigMock);
-    // when
-    String serverUrl = notifier.getBuildServerUrl();
-    // then
-    assertThat(serverUrl, equalTo(EXPECTED_URL));
+
+    final JenkinsLocationConfiguration locationConfigMock = Mockito.mock(JenkinsLocationConfiguration.class);
+    when(locationConfigMock.getUrl()).thenReturn(EXPECTED_URL);
+    try (MockedStatic<JenkinsLocationConfiguration> locationConfigMock2 = Mockito.mockStatic(JenkinsLocationConfiguration.class)) {
+      locationConfigMock2.when(JenkinsLocationConfiguration::get).thenReturn(locationConfigMock);
+
+      // when
+      String serverUrl = notifier.getBuildServerUrl();
+      // then
+      assertThat(serverUrl, equalTo(EXPECTED_URL));
+    }
   }
 
   @Test

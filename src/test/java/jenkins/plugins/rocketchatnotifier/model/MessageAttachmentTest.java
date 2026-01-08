@@ -2,37 +2,48 @@ package jenkins.plugins.rocketchatnotifier.model;
 
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({Jenkins.class, MessageAttachment.class})
-public class MessageAttachmentTest {
+class MessageAttachmentTest {
 
   @Mock
   private Jenkins jenkins;
 
-  @Before
-  public void setup() throws Exception {
-    MockitoAnnotations.initMocks(this);
-    PowerMockito.mockStatic(Jenkins.class);
-    PowerMockito.when(Jenkins.getInstanceOrNull()).thenReturn(jenkins);
-    PowerMockito.when(Jenkins.get()).thenReturn(jenkins);
+  private final List<AutoCloseable> closeableList = new ArrayList<>();
 
+  @BeforeEach
+  public void setup() throws Exception {
+    closeableList.add(MockitoAnnotations.openMocks(this));
+
+    MockedStatic<Jenkins> jenkinsMockedStatic = Mockito.mockStatic(Jenkins.class);
+    jenkinsMockedStatic.when(Jenkins::get).thenReturn(jenkins);
+    closeableList.add(jenkinsMockedStatic);
+  }
+
+  @AfterEach
+  public void tearDown() throws Exception {
+    for (AutoCloseable autoCloseable : closeableList) {
+      if (autoCloseable != null) {
+        autoCloseable.close();
+      }
+    }
   }
 
   @Test
-  public void fromJSONWithAllFields() {
+  void fromJSONWithAllFields() {
     MessageAttachment messageAttachment = new MessageAttachment("test");
     messageAttachment.setColor("color");
     messageAttachment.setText("text");
@@ -51,7 +62,7 @@ public class MessageAttachmentTest {
   }
 
   @Test
-  public void fromJSONWithRequiredFields() {
+  void fromJSONWithRequiredFields() {
     MessageAttachment messageAttachment = new MessageAttachment("test");
     assertThat(MessageAttachment.fromJSON(JSONObject.fromObject(messageAttachment)), is(equalTo(messageAttachment)));
   }

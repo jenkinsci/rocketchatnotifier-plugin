@@ -1,32 +1,32 @@
 package jenkins.plugins.rocketchatnotifier.workflow;
 
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.spy;
-import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
+
 import jenkins.model.Jenkins;
 import jenkins.plugins.rocketchatnotifier.RocketChatNotifier;
 import jenkins.plugins.rocketchatnotifier.RocketClientImpl;
 import jenkins.plugins.rocketchatnotifier.RocketClientWebhookImpl;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({Jenkins.class, RocketSendStep.class, RocketClientImpl.class})
 public class RocketSendTest {
 
   @Mock
@@ -50,11 +50,19 @@ public class RocketSendTest {
   @Mock
   RocketClientWebhookImpl rocketWebhookClientMock;
 
-  @Before
+  private final List<AutoCloseable> closeableList = new ArrayList<>();
+
+
+  @BeforeEach
   public void setUp() throws Exception {
-    PowerMockito.mockStatic(Jenkins.class);
-    whenNew(RocketClientImpl.class).withAnyArguments().thenReturn(rocketClientMock);
-    whenNew(RocketClientWebhookImpl.class).withAnyArguments().thenReturn(rocketWebhookClientMock);
+    closeableList.add(MockitoAnnotations.openMocks(this));
+
+    MockedStatic<Jenkins> jenkinsMockedStatic = Mockito.mockStatic(Jenkins.class);
+    jenkinsMockedStatic.when(Jenkins::get).thenReturn(jenkins);
+    closeableList.add(jenkinsMockedStatic);
+
+    closeableList.add(Mockito.mockConstruction(RocketClientImpl.class));
+
     when(jenkins.getDescriptorByType(RocketChatNotifier.DescriptorImpl.class)).thenReturn(rocketDescMock);
     when(rocketDescMock.getRocketServerUrl()).thenReturn("rocket.test.com");
     when(rocketDescMock.getUsername()).thenReturn("user");
@@ -62,7 +70,15 @@ public class RocketSendTest {
     when(rocketDescMock.getChannel()).thenReturn("default");
     when(rocketDescMock.getWebhookToken()).thenReturn("default-webhook-token");
     when(rocketDescMock.getWebhookTokenCredentialId()).thenReturn("default-webhook-token-credential-id");
-    when(Jenkins.get()).thenReturn(jenkins);
+  }
+
+  @AfterEach
+  public void tearDown() throws Exception {
+    for (AutoCloseable autoCloseable : closeableList) {
+      if (autoCloseable != null) {
+        autoCloseable.close();
+      }
+    }
   }
 
   @Test
@@ -75,7 +91,7 @@ public class RocketSendTest {
     stepExecution.run = run;
     // when
     when(taskListenerMock.getLogger()).thenReturn(printStreamMock);
-    when(stepExecution.getRocketClient(anyString(), anyBoolean(), anyString(), anyString(), anyString(), Matchers.isNull(String.class), Matchers.isNull(String.class))).thenReturn(rocketClientMock);
+    when(stepExecution.getRocketClient(anyString(), anyBoolean(), anyString(), anyString(), anyString(), isNull(), isNull())).thenReturn(rocketClientMock);
     stepExecution.run();
     // then
     verify(stepExecution, times(1)).getRocketClient("rocket.test.com", false, "user", "pass", "default", null, null);

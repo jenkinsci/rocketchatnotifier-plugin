@@ -2,17 +2,20 @@ package jenkins.plugins.rocketchatnotifier.utils;
 
 import hudson.model.Result;
 import hudson.model.Run;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
 
-@RunWith(MockitoJUnitRunner.class)
 public class BuildUtilsTest {
 
   @Mock
@@ -24,6 +27,22 @@ public class BuildUtilsTest {
   @Mock
   private Run thirdRun;
   private final BuildUtils buildUtils = new BuildUtils();
+
+  private final List<AutoCloseable> closeableList = new ArrayList<>();
+
+  @BeforeEach
+  public void setup() throws Exception {
+    closeableList.add(MockitoAnnotations.openMocks(this));
+  }
+
+  @AfterEach
+  public void tearDown() throws Exception {
+    for (AutoCloseable autoCloseable : closeableList) {
+      if (autoCloseable != null) {
+        autoCloseable.close();
+      }
+    }
+  }
 
   @Test
   public void shouldFindPreviousResultAcrossMultipleIterations() {
@@ -51,7 +70,6 @@ public class BuildUtilsTest {
   @Test
   public void shouldReturnNullIfPreviousBuildIsStillRunning() {
     given(run.getPreviousBuild()).willReturn(firstRun);
-    given(firstRun.getResult()).willReturn(Result.SUCCESS);
     given(firstRun.isBuilding()).willReturn(true);
 
     Result result = buildUtils.findPreviousBuildResult(run);

@@ -1,28 +1,25 @@
 package jenkins.plugins.rocketchatnotifier;
 
 import hudson.model.Descriptor;
-import hudson.model.ItemGroup;
-import hudson.model.listeners.SaveableListener;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.kohsuke.stapler.StaplerRequest;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({Jenkins.class, SaveableListener.class, RocketChatNotifier.DescriptorImpl.class})
 public class RocketChatNotifierDecriptorImplTest {
 
   @Mock
@@ -32,20 +29,33 @@ public class RocketChatNotifierDecriptorImplTest {
   @Mock
   private StaplerRequest staplerRequest;
 
+  private final List<AutoCloseable> closeableList = new ArrayList<>();
+
   private Descriptor descriptor;
 
-  @Before
+  @BeforeEach
   public void setup() throws Exception {
-    MockitoAnnotations.initMocks(this);
-    PowerMockito.mockStatic(Jenkins.class);
-    PowerMockito.mockStatic(SaveableListener.class);
-    PowerMockito.when(Jenkins.getInstanceOrNull()).thenReturn(jenkins);
-    PowerMockito.when(Jenkins.get()).thenReturn(jenkins);
+    closeableList.add(MockitoAnnotations.openMocks(this));
+
+    MockedStatic<Jenkins> jenkinsMockedStatic = Mockito.mockStatic(Jenkins.class);
+    jenkinsMockedStatic.when(Jenkins::get).thenReturn(jenkins);
+    closeableList.add(jenkinsMockedStatic);
+
     File rootPath = new File(System.getProperty("java.io.tmpdir"));
     when(jenkins.getRootDir()).thenReturn(rootPath);
     when(staplerRequest.getParameter("buildServerUrl")).thenReturn("jenkins.example.com");
     descriptor = new RocketChatNotifier.DescriptorImpl();
   }
+
+  @AfterEach
+  public void tearDown() throws Exception {
+    for (AutoCloseable autoCloseable : closeableList) {
+      if (autoCloseable != null) {
+        autoCloseable.close();
+      }
+    }
+  }
+
 
   @Test
   public void shouldWorkWithEmptyFormData() throws Exception {
