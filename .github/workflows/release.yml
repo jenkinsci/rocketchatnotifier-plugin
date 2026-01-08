@@ -1,0 +1,110 @@
+name: create release
+run-name: "Release ${{ inputs.releaseversion }}"
+
+on:
+    workflow_dispatch:
+        inputs:
+            releaseversion:
+                description: 'Release version (<major>.<minor>.<patch>)'
+                required: true
+                type: string
+                default: "X.Y.Z"
+
+jobs:
+    release:
+        runs-on: ubuntu-latest
+        permissions:
+            packages: write
+            contents: write
+            attestations: write
+            id-token: write
+
+        steps:
+            -   name: Check out
+                uses: actions/checkout@v3
+                with:
+                    fetch-depth: 0
+
+            -   name: set git config
+                env:
+                    GH_TOKEN: ${{ github.token }}
+                run: |
+                    git config --global user.email "${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
+                    git config --global user.name "$(gh api /users/${GITHUB_ACTOR} | jq .name -r)"
+
+            -   name: Set up JDK
+                uses: actions/setup-java@v3
+                with:
+                    distribution: 'adopt'
+                    java-version: 25
+                    cache: 'maven'
+
+            -   name: Setup settings.xml
+                uses: s4u/maven-settings-action@v3.1.0
+                with:
+                    override: true
+                    servers: |
+                        [{
+                            "id": "maven.jenkins-ci.org",
+                            "username": "${{ vars.OSS_JENKINS_USER }}",
+                            "password": "${{ secrets.OSS_JENKINS_PASS }}"
+                        }]
+
+            -   name: Create release
+                id: create-release
+                env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                run: |
+                    export TZ="Europe/Berlin"
+                    git checkout -b release/${{ inputs.releaseversion }}
+                    mvn release:prepare release:perform -B -DreleaseVersion=${{ inputs.releaseversion }} -DskipTests=true -DskipITs=true -DlocalCheckout=true -D"arguments=-DskipTests=true -DskipITs=true"
+                    # manually push
+                    git push --tags
+                    git push origin release/${{ inputs.releaseversion }}
+                    git branch --set-upstream-to=origin/release/${{ inputs.releaseversion }} release/${{ inputs.releaseversion }} || true
+                    # write version info
+                    cat <<EOF >target/config.json
+                    {
+                      "version": "${{ inputs.releaseversion }}"
+                    }
+                    EOF
+
+            -   name: Conventional Changelog Action
+                id: create-changelog
+                uses: TriPSs/conventional-changelog-action@v5
+                with:
+                    input-file: CHANGELOG.md
+                    github-token: ${{ secrets.GITHUB_TOKEN }}
+                    version-file: target/config.json
+                    pre-release: true
+                    skip-bump: true
+                    skip-tag: true
+                    skip-on-empty: true
+                    tag-prefix: 'v'
+
+            -   name: tag-and-release
+                id: tag-and-release
+                uses: avakar/tag-and-release@v1
+                with:
+                    release_name: ${{ github.event.inputs.releaseversion }}
+                    tag_name: v${{ github.event.inputs.releaseversion }}
+                    draft: true
+                env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            -   name: Create Pull Request
+                id: create-pr
+                uses: peter-evans/create-pull-request@v7
+                with:
+                    commit-message: Update report
+                    committer: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+                    author: ${{ github.actor }} <${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com>
+                    branch: release/${{ inputs.releaseversion }}
+                    base: develop
+                    title: '[Release] ${{ inputs.releaseversion }}'
+                    body: |
+                        Release Plugin v${{ inputs.releaseversion }}
+                    labels: |
+                        release
+                    assignees: hypery2k
+                    draft: false
