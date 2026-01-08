@@ -1,6 +1,5 @@
 package jenkins.plugins.rocketchatnotifier;
 
-import edu.umd.cs.findbugs.annotations.SuppressWarnings;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
@@ -26,7 +25,6 @@ import java.util.logging.Logger;
 /**
  * @author Martin Reinhardt (hypery2k)
  */
-@SuppressWarnings("rawtypes")
 public class ActiveNotifier implements FineGrainedNotifier {
 
   private static final Logger LOGGER = Logger.getLogger(RocketChatNotifier.class.getName());

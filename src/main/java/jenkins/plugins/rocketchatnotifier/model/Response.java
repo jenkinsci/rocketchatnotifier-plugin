@@ -53,6 +53,10 @@ public class Response {
     return this.users.clone();
   }
 
+  public void setChannels(Room[] channels) {
+    this.channels = channels;
+  }
+
   public Room[] getChannels() {
     return this.channels.clone();
   }

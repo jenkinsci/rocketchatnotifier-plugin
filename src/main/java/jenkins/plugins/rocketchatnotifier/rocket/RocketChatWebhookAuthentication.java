@@ -1,7 +1,7 @@
 package jenkins.plugins.rocketchatnotifier.rocket;
 
-import com.mashape.unirest.request.HttpRequest;
 import jenkins.plugins.rocketchatnotifier.rocket.errorhandling.RocketClientException;
+import kong.unirest.HttpRequest;
 
 public class RocketChatWebhookAuthentication implements RocketChatCallAuthentication {
   private static final String HOOKS_PATH = "hooks/";
