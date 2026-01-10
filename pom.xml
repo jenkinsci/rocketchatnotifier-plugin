@@ -31,6 +31,7 @@
     <maven-site-plugin.version>3.12.1</maven-site-plugin.version>
 
     <enforcer.skipRules>bannedDependencies</enforcer.skipRules>
+    <ban-junit4-imports.skip>false</ban-junit4-imports.skip>
   </properties>
 
   <scm>
