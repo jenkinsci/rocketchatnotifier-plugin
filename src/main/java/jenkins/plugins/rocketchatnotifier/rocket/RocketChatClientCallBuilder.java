@@ -196,7 +196,7 @@ public class RocketChatClientCallBuilder {
   }
 
   private static SSLContext createAlwaysTrustingSSLContext() throws NoSuchAlgorithmException, KeyManagementException {
-    SSLContext sslContext = SSLContext.getInstance("SSL");
+    SSLContext sslContext = SSLContext.getInstance("TLS");
 
     // set up a TrustManager that trusts everything
     sslContext.init(null, new TrustManager[]{new X509TrustManager() {
