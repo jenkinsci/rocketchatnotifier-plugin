@@ -57,6 +57,7 @@ jobs:
                 run: |
                     export TZ="Europe/Berlin"
                     git checkout -b release/${{ inputs.releaseversion }}
+                    ./mvnw mvn versions:set -DnewVersion=${{ inputs.releaseversion }}
                     ./mvnw release:prepare release:perform -B -DreleaseVersion=${{ inputs.releaseversion }} -DskipTests=true -DskipITs=true -DlocalCheckout=true -Darguments="-DskipTests=true -DskipITs=true"
                     # TODO: Workaround for maven release not updating
                     ./mvnw mvn versions:set -DnewVersion=${{ inputs.releaseversion }}-SNAPSHOT
