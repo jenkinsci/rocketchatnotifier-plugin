@@ -27,9 +27,8 @@
     <rocket.port>44443</rocket.port>
     <mongo.port>27017</mongo.port>
     <!-- Maven Plugins -->
-    <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
+    <maven-release-plugin.version>3.3.1</maven-release-plugin.version>
     <maven-site-plugin.version>3.12.1</maven-site-plugin.version>
-    <maven-gitflow-plugin.version>1.21.0</maven-gitflow-plugin.version>
 
     <enforcer.skipRules>bannedDependencies</enforcer.skipRules>
   </properties>
@@ -85,26 +84,6 @@
           <version>${maven-release-plugin.version}</version>
           <configuration>
             <tag>v${project.version}</tag>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>com.amashchenko.maven.plugin</groupId>
-          <artifactId>gitflow-maven-plugin</artifactId>
-          <version>${maven-gitflow-plugin.version}</version>
-          <configuration>
-            <installProject>false</installProject>
-            <verbose>false</verbose>
-            <gitFlowConfig>
-              <productionBranch>main</productionBranch>
-              <developmentBranch>develop</developmentBranch>
-              <featureBranchPrefix>feature/</featureBranchPrefix>
-              <releaseBranchPrefix>release/</releaseBranchPrefix>
-              <hotfixBranchPrefix>hotfix/</hotfixBranchPrefix>
-              <supportBranchPrefix>support/</supportBranchPrefix>
-              <versionTagPrefix>v</versionTagPrefix>
-              <origin>origin</origin>
-            </gitFlowConfig>
-            <keepBranch>false</keepBranch>
           </configuration>
         </plugin>
       </plugins>

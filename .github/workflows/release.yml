@@ -57,7 +57,7 @@ jobs:
                 run: |
                     export TZ="Europe/Berlin"
                     git checkout -b release/${{ inputs.releaseversion }}
-                    mvn release:prepare release:perform -B -DreleaseVersion=${{ inputs.releaseversion }} -DskipTests=true -DskipITs=true -DlocalCheckout=true -D"arguments=-DskipTests=true -DskipITs=true"
+                    ./mvnw release:prepare release:perform -B -DreleaseVersion=${{ inputs.releaseversion }} -DskipTests=true -DskipITs=true -Darguments="-DskipTests=true -DskipITs=true"
                     # manually push
                     git push --tags
                     git push origin release/${{ inputs.releaseversion }}
