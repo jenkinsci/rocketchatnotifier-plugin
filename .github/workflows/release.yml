@@ -18,6 +18,7 @@ jobs:
             contents: write
             attestations: write
             id-token: write
+            pull-requests: write
 
         steps:
             -   name: Check out
@@ -59,6 +60,7 @@ jobs:
                     git checkout -b release/${{ inputs.releaseversion }}
                     # TODO: Workaround for maven release not updating
                     ./mvnw versions:set -DnewVersion=${{ inputs.releaseversion }}
+                    git commit --amend -m "chore: Release ${{ inputs.releaseversion }}"
                     ./mvnw deploy -DskipTests=true -DskipITs=true
                     git tag v${{ inputs.releaseversion }}
                     #./mvnw release:prepare release:perform -B -DreleaseVersion=${{ inputs.releaseversion }} -DskipTests=true -DskipITs=true -DlocalCheckout=true -Darguments="-DskipTests=true -DskipITs=true"
