@@ -165,6 +165,21 @@
   </profiles>
 
   <dependencies>
+  <!-- Required for @RequirePOST -->
+  <dependency>
+    <groupId>org.kohsuke.stapler</groupId>
+    <artifactId>stapler</artifactId>
+    <version>1.262</version>
+  </dependency>
+
+  <!-- Required for Notifier -->
+  <dependency>
+    <groupId>org.jenkins-ci.main</groupId>
+    <artifactId>jenkins-core</artifactId>
+    <version>2.426.1</version>
+    <scope>provided</scope>
+  </dependency>
+
     <!-- For JUnit test results UI compatibility -->
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
