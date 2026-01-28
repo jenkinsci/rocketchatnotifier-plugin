@@ -1,49 +1,30 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core"
-         xmlns:f="/lib/form">
-  <!--
-    This Jelly script is used to produce the global configuration option.
-
-    Hudson uses a set of tag libraries to provide uniformity in forms.
-    To determine where this tag is defined, first check the namespace URI,
-    and then look under $HUDSON/views/. For example, <f:section> is defined
-    in $HUDSON/views/lib/form/section.jelly.
-
-    It's also often useful to just check other similar scripts to see what
-    tags they use. Views are always organized according to its owner class,
-    so it should be straightforward to find them.
-  -->
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:c="/lib/credentials">
   <f:section title="Global RocketChat Notifier Settings">
     <f:entry title="Rocket Server URL">
-      <f:textbox field="rocketServerUrl" clazz="required" name="rocketServerUrl"/>
+      <f:textbox field="rocketServerUrl" name="rocketServerUrl"/>
     </f:entry>
-    <f:entry title="Login Username">
-      <f:textbox field="username" name="username" help="Login of the user. Can also be the user id for token based login"/>
+    <f:entry title="Credentials (Username/Password)" description="Stores the Rocket.Chat login securely in Jenkins Credentials.">
+      <c:select field="credentialsId"/>
     </f:entry>
-    <f:entry title="Login password">
-      <f:password field="password" name="password" help="Password of the rocketchat user. Can be also the personal access token"/>
-    </f:entry>
-    <f:entry title="Channel" description="Comma separated list of rooms (e.g. #project) and / or persons (e.g. @john)">
-      <f:textbox field="channel" clazz="required" name="channel" />
+    <f:entry title="Channel" description="Comma separated list of rooms (e.g. #project) and/or persons (e.g. @john)">
+      <f:textbox field="channel" name="channel"/>
     </f:entry>
     <f:advanced>
-      <f:entry title="Trust Server Certificate?"
-               description="If checked, the SSL certificate of the Rocket Server will not be checked">
+      <f:entry title="Trust Server Certificate?" description="If checked, the SSL certificate of the Rocket Server will not be checked">
         <f:checkbox field="trustSSL" name="trustSSL"/>
       </f:entry>
-      <f:entry title="Webhook Token Credential ID">
-        <f:textbox field="webhookTokenCredentialId" name="webhookTokenCredentialId" help="Webhook token as Secret Text credential for posting messages. Overrides webhook token text."/>
+      <f:entry title="Webhook Token Credential ID" description="Secret Text credential for posting messages via Incoming Webhook. Overrides login/password credentials.">
+        <c:select field="webhookTokenCredentialId"/>
       </f:entry>
-      <f:entry title="Webhook Token">
-        <f:password field="webhookToken" name="webhookToken" help="As alternative for login/password you can use the webhook token here"/>
-      </f:entry>
-      <f:entry title="Build Server URL">
+      <f:entry title="Build Server URL" description="Jenkins build server URL to include in notifications">
         <f:textbox field="buildServerUrl" name="buildServerUrl"/>
       </f:entry>
     </f:advanced>
     <f:validateButton
-      title="${%Test Connection}" progress="${%Testing...}"
-      method="testConnection"
-      with="rocketServerUrl,trustSSL,username,password,channel,buildServerUrl,webhookToken,webhookTokenCredentialId"/>
+        title="${%Test Connection}" progress="${%Testing...}"
+        method="testConnection"
+        with="rocketServerUrl,trustSSL,channel,buildServerUrl,webhookTokenCredentialId,credentialsId"/>
   </f:section>
 </j:jelly>
+
