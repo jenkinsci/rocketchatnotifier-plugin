@@ -1,6 +1,9 @@
 package jenkins.plugins.rocketchatnotifier;
 
+import com.cloudbees.plugins.credentials.CredentialsMatchers;
+import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
+import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import hudson.EnvVars;
 import hudson.Extension;
@@ -9,6 +12,7 @@ import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.model.Descriptor;
+import hudson.model.Item;
 import hudson.security.ACL;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
@@ -25,6 +29,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
@@ -67,8 +72,15 @@ public class RocketChatNotifier extends Notifier {
   private String customMessage;
   private boolean rawMessage;
   private List<MessageAttachment> attachments;
+  @Deprecated
   private String webhookToken;
   private String webhookTokenCredentialId;
+
+  /**
+   * Optional Username/Password credential to use for Rocket.Chat login.
+   * Job-level value overrides the global configuration.
+   */
+  private String credentialsId;
 
   @Override
   public DescriptorImpl getDescriptor() {
@@ -168,6 +180,11 @@ public class RocketChatNotifier extends Notifier {
 
   public String getWebhookTokenCredentialId() {
     return webhookTokenCredentialId;
+  }
+
+
+  public String getCredentialsId() {
+    return credentialsId;
   }
 
   public String getRocketServerUrl() {
@@ -312,6 +329,12 @@ public class RocketChatNotifier extends Notifier {
     this.webhookTokenCredentialId = webhookTokenCredentialId;
   }
 
+
+  @DataBoundSetter
+  public void setCredentialsId(String credentialsId) {
+    this.credentialsId = credentialsId;
+  }
+
   @DataBoundConstructor
   public RocketChatNotifier() {
     super();
@@ -389,6 +412,25 @@ public class RocketChatNotifier extends Notifier {
     if (StringUtils.isEmpty(serverUrl)) {
       serverUrl = getDescriptor().getRocketServerUrl();
     }
+
+    String channel = this.channel;
+    if (StringUtils.isEmpty(channel)) {
+      channel = getDescriptor().getChannel();
+    }
+
+    // Webhook token credential ID: job overrides global
+    String webhookTokenCredentialId = this.webhookTokenCredentialId;
+    if (StringUtils.isEmpty(webhookTokenCredentialId)) {
+      webhookTokenCredentialId = getDescriptor().getWebhookTokenCredentialId();
+    }
+
+    // Username/Password credentialsId: job overrides global
+    String credentialsId = this.credentialsId;
+    if (StringUtils.isEmpty(credentialsId)) {
+      credentialsId = getDescriptor().getCredentialsId();
+    }
+
+    // Legacy plaintext support (for backward compatibility / migration only)
     String username = this.username;
     if (StringUtils.isEmpty(username)) {
       username = getDescriptor().getUsername();
@@ -396,14 +438,6 @@ public class RocketChatNotifier extends Notifier {
     String password = this.password;
     if (StringUtils.isEmpty(password)) {
       password = getDescriptor().getPassword();
-    }
-    String channel = this.channel;
-    if (StringUtils.isEmpty(channel)) {
-      channel = getDescriptor().getChannel();
-    }
-    String webhookTokenCredentialId = this.webhookTokenCredentialId;
-    if (StringUtils.isEmpty(webhookTokenCredentialId)) {
-      webhookTokenCredentialId = getDescriptor().getWebhookTokenCredentialId();
     }
     String webhookToken = this.webhookToken;
     if (StringUtils.isEmpty(webhookToken)) {
@@ -417,18 +451,60 @@ public class RocketChatNotifier extends Notifier {
       listener.getLogger().println("Error retrieving environment vars: " + e.getMessage());
       env = new EnvVars();
     }
+
     serverUrl = env.expand(serverUrl);
+    channel = env.expand(channel);
     username = env.expand(username);
     password = env.expand(password);
 
-    return getRocketClient(serverUrl, username, password, channel, webhookToken, webhookTokenCredentialId, trustSSL);
+    return getRocketClient(r.getProject(), serverUrl, username, password, channel, webhookToken, webhookTokenCredentialId, credentialsId, trustSSL);
   }
 
-  public static RocketClient getRocketClient(String serverUrl, String username, String password, String channel, String webhookToken, String webhookTokenCredentialId, boolean trustSSL) throws RocketClientException {
-    if (!StringUtils.isEmpty(webhookToken) || !StringUtils.isEmpty(webhookTokenCredentialId)) {
-      return new RocketClientWebhookImpl(serverUrl, trustSSL, webhookToken, webhookTokenCredentialId, channel);
+  public static RocketClient getRocketClient(
+    Item context,
+    String serverUrl,
+    String username,
+    String password,
+    String channel,
+    String webhookToken,
+    String webhookTokenCredentialId,
+    String credentialsId,
+    boolean trustSSL) throws RocketClientException {
+
+    // Preferred: webhook via Secret Text credential
+    if (StringUtils.isNotEmpty(webhookTokenCredentialId)) {
+      return new RocketClientWebhookImpl(serverUrl, trustSSL, null, webhookTokenCredentialId, channel);
     }
+
+    // Legacy: webhook token stored directly (deprecated; kept for backward compatibility only)
+    if (StringUtils.isNotEmpty(webhookToken)) {
+      return new RocketClientWebhookImpl(serverUrl, trustSSL, webhookToken, null, channel);
+    }
+
+    // Preferred: username/password via Credentials
+    if (StringUtils.isNotEmpty(credentialsId)) {
+      Item lookupContext = context != null ? context : Jenkins.get();
+      StandardUsernamePasswordCredentials c = CredentialsProvider.findCredentialById(
+        credentialsId,
+        StandardUsernamePasswordCredentials.class,
+        lookupContext,
+        Collections.<DomainRequirement>emptyList()
+      );
+      if (c == null) {
+        throw new RocketClientException("Configured credentialsId '" + credentialsId + "' not found or not usable.");
+      }
+      return new RocketClientImpl(serverUrl, trustSSL, c.getUsername(), c.getPassword().getPlainText(), channel);
+    }
+
+    // Legacy: plaintext username/password (deprecated; kept for backward compatibility only)
     return new RocketClientImpl(serverUrl, trustSSL, username, password, channel);
+  }
+
+  /**
+   * Backward compatible overload.
+   */
+  public static RocketClient getRocketClient(String serverUrl, String username, String password, String channel, String webhookToken, String webhookTokenCredentialId, boolean trustSSL) throws RocketClientException {
+    return getRocketClient(null, serverUrl, username, password, channel, webhookToken, webhookTokenCredentialId, null, trustSSL);
   }
 
   @Override
@@ -466,6 +542,7 @@ public class RocketChatNotifier extends Notifier {
     private String password;
     private String channel;
     private String buildServerUrl;
+    @Deprecated
     private String webhookToken;
     private String webhookTokenCredentialId;
 
@@ -518,6 +595,12 @@ public class RocketChatNotifier extends Notifier {
       this.rocketServerUrl = rocketServerUrl;
     }
 
+
+    @DataBoundSetter
+    public void setCredentialsId(String credentialsId) {
+      this.credentialsId = credentialsId;
+    }
+
     @DataBoundSetter
     public void setUsername(String username) {
       this.username = username;
@@ -565,8 +648,12 @@ public class RocketChatNotifier extends Notifier {
     }
 
     @Override
+    @RequirePOST
     public boolean configure(StaplerRequest req, JSONObject json) {
-      req.bindJSON(this, json);
+      Jenkins.get().checkPermission(Jenkins.ADMINISTER);
+      if (json != null) {
+        req.bindJSON(this, json);
+      }
       save();
       return true;
     }
@@ -584,17 +671,42 @@ public class RocketChatNotifier extends Notifier {
                                            @QueryParameter("channel") final String channel,
                                            @QueryParameter("buildServerUrl") final String buildServerUrl,
                                            @QueryParameter("webhookToken") final String token,
-                                           @QueryParameter("webhookTokenCredentialId") final String webhookTokenCredentialId) throws FormException {
+                                           @QueryParameter("webhookTokenCredentialId") final String webhookTokenCredentialId,
+                                           @QueryParameter("credentialsId") final String credentialsId) throws FormException {
       Jenkins.get().checkPermission(Jenkins.ADMINISTER);
       try {
         String targetServerUrl = rocketServerUrl + RocketClientImpl.API_PATH;
         if (StringUtils.isEmpty(rocketServerUrl)) {
-          targetServerUrl = this.rocketServerUrl;
+          targetServerUrl = this.rocketServerUrl + RocketClientImpl.API_PATH;
         }
         boolean targetTrustSSL = this.trustSSL;
         if (StringUtils.isNotEmpty(trustSSL)) {
           targetTrustSSL = BooleanUtils.toBoolean(trustSSL);
         }
+
+        String targetChannel = channel;
+        if (StringUtils.isEmpty(targetChannel)) {
+          targetChannel = this.channel;
+        }
+
+        String targetBuildServerUrl = buildServerUrl;
+        if (StringUtils.isEmpty(targetBuildServerUrl)) {
+          targetBuildServerUrl = this.buildServerUrl;
+        }
+
+        // Prefer webhook via Secret Text credential
+        String targetWebhookTokenCredentialId = webhookTokenCredentialId;
+        if (StringUtils.isEmpty(targetWebhookTokenCredentialId)) {
+          targetWebhookTokenCredentialId = this.webhookTokenCredentialId;
+        }
+
+        // Prefer username/password via credentialsId
+        String targetCredentialsId = credentialsId;
+        if (StringUtils.isEmpty(targetCredentialsId)) {
+          targetCredentialsId = this.credentialsId;
+        }
+
+        // Legacy plaintext fallback (deprecated)
         String targetUsername = username;
         if (StringUtils.isEmpty(targetUsername)) {
           targetUsername = this.username;
@@ -603,29 +715,31 @@ public class RocketChatNotifier extends Notifier {
         if (StringUtils.isEmpty(targetPassword)) {
           targetPassword = this.password;
         }
-        String targetChannel = channel;
-        if (StringUtils.isEmpty(targetChannel)) {
-          targetChannel = this.channel;
-        }
-        String targetBuildServerUrl = buildServerUrl;
-        if (StringUtils.isEmpty(targetBuildServerUrl)) {
-          targetBuildServerUrl = this.buildServerUrl;
-        }
         String targetWebhookToken = token;
         if (StringUtils.isEmpty(targetWebhookToken)) {
           targetWebhookToken = this.webhookToken;
         }
-        String targetWebhookTokenCredentialId = webhookTokenCredentialId;
-        if (StringUtils.isEmpty(targetWebhookTokenCredentialId)) {
-          targetWebhookTokenCredentialId = this.webhookTokenCredentialId;
-        }
 
         RocketClient rocketChatClient;
-        if (!StringUtils.isEmpty(targetWebhookToken) || !StringUtils.isEmpty(targetWebhookTokenCredentialId)) {
-          rocketChatClient = new RocketClientWebhookImpl(targetServerUrl, targetTrustSSL, targetWebhookToken, targetWebhookTokenCredentialId, channel);
+        if (StringUtils.isNotEmpty(targetWebhookTokenCredentialId)) {
+          rocketChatClient = new RocketClientWebhookImpl(targetServerUrl, targetTrustSSL, null, targetWebhookTokenCredentialId, targetChannel);
+        } else if (StringUtils.isNotEmpty(targetWebhookToken)) {
+          rocketChatClient = new RocketClientWebhookImpl(targetServerUrl, targetTrustSSL, targetWebhookToken, null, targetChannel);
+        } else if (StringUtils.isNotEmpty(targetCredentialsId)) {
+          StandardUsernamePasswordCredentials c = CredentialsProvider.findCredentialById(
+            targetCredentialsId,
+            StandardUsernamePasswordCredentials.class,
+            Jenkins.get(),
+            Collections.<DomainRequirement>emptyList()
+          );
+          if (c == null) {
+            return FormValidation.error("Configured credentialsId '%s' not found or not usable.", targetCredentialsId);
+          }
+          rocketChatClient = new RocketClientImpl(targetServerUrl, targetTrustSSL, c.getUsername(), c.getPassword().getPlainText(), targetChannel);
         } else {
           rocketChatClient = new RocketClientImpl(targetServerUrl, targetTrustSSL, targetUsername, targetPassword, targetChannel);
         }
+
         String message = "RocketChat/Jenkins plugin: you're all set on " + targetBuildServerUrl;
         LOGGER.fine("Start validating config");
         rocketChatClient.validate();
@@ -646,27 +760,40 @@ public class RocketChatNotifier extends Notifier {
       }
     }
 
-    public ListBoxModel doFillWebhookTokenCredentialIdItems() {
-      if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
-        return new ListBoxModel();
-      }
+    public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Item context, @QueryParameter String credentialsId) {
+      Jenkins.get().checkPermission(Jenkins.ADMINISTER);
+      Item lookupContext = context != null ? context : Jenkins.get();
       return new StandardListBoxModel()
-        .withEmptySelection()
-        .withAll(lookupCredentials(
-          StringCredentials.class,
-          Jenkins.get(),
+        .includeEmptyValue()
+        .includeMatchingAs(
           ACL.SYSTEM,
-          Collections.<DomainRequirement>emptyList())
-        );
+          lookupContext,
+          StandardUsernamePasswordCredentials.class,
+          Collections.<DomainRequirement>emptyList(),
+          CredentialsMatchers.always()
+        )
+        .includeCurrentValue(credentialsId);
     }
 
-    //WARN users that they should not use the plain/exposed token, but rather the token credential id
-    public FormValidation doCheckWebhookToken(@QueryParameter String value) {
-      if (StringUtils.isEmpty(value)) {
-        return FormValidation.ok();
+    public ListBoxModel doFillWebhookTokenCredentialIdItems(@AncestorInPath Item context, @QueryParameter String webhookTokenCredentialId) {
+      if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
+        return new StandardListBoxModel().includeCurrentValue(webhookTokenCredentialId);
       }
-      return FormValidation.warning("Exposing your Integration Token is a security risk. Please use the Webhook Token Credential ID");
+      Item lookupContext = context != null ? context : Jenkins.get();
+      return new StandardListBoxModel()
+        .includeEmptyValue()
+        .includeMatchingAs(
+          ACL.SYSTEM,
+          lookupContext,
+          StringCredentials.class,
+          Collections.<DomainRequirement>emptyList(),
+          CredentialsMatchers.always()
+        )
+        .includeCurrentValue(webhookTokenCredentialId);
     }
+
+
+    
   }
 
   @Deprecated

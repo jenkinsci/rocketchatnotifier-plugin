@@ -66,6 +66,10 @@
             <f:textbox name="rocketServerUrl" value="${instance.getRocketServerUrl()}"/>
         </f:entry>
 
+        <f:entry title="Credentials (Username/Password) - override global" field="credentialsId" description="If set, overrides global Username/Password credentials.">
+            <c:select value="${instance.getCredentialsId()}"/>
+        </f:entry>
+
         <f:entry title="Trust Server Certificate?" description="If checked, the SSL certificate of the Rocket Server will not be checked">
             <f:checkbox field="trustSSL" name="trustSSL" checked="${instance.isTrustSSL()}"/>
         </f:entry>
@@ -74,16 +78,12 @@
             <f:textbox name="channel" value="${instance.getChannel()}"/>
         </f:entry>
 
-        <f:entry title="Incoming Webhook Token" description="Webhook token for posting messages. Overrides global authentication data and channel.">
-            <f:textbox field="webhookToken" name="webhookToken" value="${instance.getWebhookToken()}"/>
-        </f:entry>
-
         <f:entry title="Webhook Token Credential ID" field="webhookTokenCredentialId" name="webhookTokenCredentialId" description="Webhook token as Secret Text credential for posting messages. Overrides webhook token text.">
             <c:select value="${instance.getWebhookTokenCredentialId()}"/>
         </f:entry>
 
         <f:validateButton
                 title="${%Test Connection}" progress="${%Testing...}"
-                method="testConnection" with="rocketServerUrl,trustSSL,channel,webhookToken,webhookTokenCredentialId"/>
+                method="testConnection" with="rocketServerUrl,trustSSL,channel,webhookTokenCredentialId,credentialsId"/>
     </f:advanced>
 </j:jelly>
