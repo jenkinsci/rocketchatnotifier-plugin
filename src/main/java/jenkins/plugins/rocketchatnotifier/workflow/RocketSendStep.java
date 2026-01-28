@@ -1,8 +1,8 @@
 package jenkins.plugins.rocketchatnotifier.workflow;
 
-import static com.cloudbees.plugins.credentials.CredentialsProvider.lookupCredentials;
-
+import com.cloudbees.plugins.credentials.CredentialsMatchers;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
+import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.AbortException;
@@ -10,70 +10,82 @@ import hudson.Extension;
 import hudson.Util;
 import hudson.model.Run;
 import hudson.model.TaskListener;
+import hudson.model.Item;
+import hudson.model.ItemGroup;
 import hudson.security.ACL;
-import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+import jenkins.model.Jenkins;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.inject.Inject;
-import jenkins.model.Jenkins;
-import jenkins.plugins.rocketchatnotifier.Messages;
-import jenkins.plugins.rocketchatnotifier.RocketChatNotifier;
 import jenkins.plugins.rocketchatnotifier.RocketClient;
 import jenkins.plugins.rocketchatnotifier.RocketClientImpl;
 import jenkins.plugins.rocketchatnotifier.RocketClientWebhookImpl;
 import jenkins.plugins.rocketchatnotifier.model.MessageAttachment;
 import jenkins.plugins.rocketchatnotifier.rocket.errorhandling.RocketClientException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepDescriptorImpl;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepImpl;
 import org.jenkinsci.plugins.workflow.steps.AbstractSynchronousNonBlockingStepExecution;
 import org.jenkinsci.plugins.workflow.steps.StepContextParameter;
+import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 
-/**
- * Workflow step to send a rocket channel notification.
- */
 public class RocketSendStep extends AbstractStepImpl {
 
-  private static final Logger LOG = Logger.getLogger(RocketSendStep.class.getName());
-
-  @NonNull
   private final String message;
-  private String serverUrl;
+  private boolean useGlobalWebhookToken;
   private boolean trustSSL;
   private String channel;
   private boolean failOnError;
+  @Deprecated
   private String webhookToken;
   private String webhookTokenCredentialId;
-
+  private String credentialsId;
   private String emoji;
   private String avatar;
   private String color;
   private boolean rawMessage;
   private List<MessageAttachment> attachments;
-  private boolean useGlobalWebhookToken;
 
-  @NonNull
+  @DataBoundConstructor
+  public RocketSendStep(@NonNull String message) {
+    this.message = message;
+  }
+
   public String getMessage() {
     return message;
+  }
+
+  public boolean isUseGlobalWebhookToken() {
+    return useGlobalWebhookToken;
+  }
+
+  public boolean isTrustSSL() {
+    return trustSSL;
   }
 
   public String getChannel() {
     return channel;
   }
 
-  public String getServerUrl() {
-    return serverUrl;
+  public boolean isFailOnError() {
+    return failOnError;
   }
 
-  public boolean isTrustSSL() {
-    return trustSSL;
+  public String getWebhookToken() {
+    return webhookToken;
+  }
+
+  public String getWebhookTokenCredentialId() {
+    return webhookTokenCredentialId;
+  }
+
+  public String getCredentialsId() {
+    return credentialsId;
   }
 
   public String getEmoji() {
@@ -92,40 +104,18 @@ public class RocketSendStep extends AbstractStepImpl {
     return rawMessage;
   }
 
-  public String getWebhookToken() {
-    return webhookToken;
-  }
-
-  public String getWebhookTokenCredentialId() {
-    return webhookTokenCredentialId;
-  }
-
   public List<MessageAttachment> getAttachments() {
     return attachments;
   }
 
-  public boolean isUseGlobalWebhookToken() {
-    return useGlobalWebhookToken;
+  @DataBoundSetter
+  public void setUseGlobalWebhookToken(boolean useGlobalWebhookToken) {
+    this.useGlobalWebhookToken = useGlobalWebhookToken;
   }
 
   @DataBoundSetter
-  public void setEmoji(final String emoji) {
-    this.emoji = Util.fixEmpty(emoji);
-  }
-
-  @DataBoundSetter
-  public void setAvatar(final String avatar) {
-    this.avatar = Util.fixEmpty(avatar);
-  }
-
-  @DataBoundSetter
-  public void setColor(final String color) {
-    this.color = Util.fixEmpty(color);
-  }
-
-  @DataBoundSetter
-  public void setAttachments(final List<MessageAttachment> attachments) {
-    this.attachments = attachments;
+  public void setTrustSSL(boolean trustSSL) {
+    this.trustSSL = trustSSL;
   }
 
   @DataBoundSetter
@@ -134,31 +124,12 @@ public class RocketSendStep extends AbstractStepImpl {
   }
 
   @DataBoundSetter
-  public void setServerUrl(String serverUrl) {
-    this.serverUrl = Util.fixEmpty(serverUrl);
-  }
-
-  @DataBoundSetter
-  public void setTrustSSL(final boolean trustSSL) {
-    this.trustSSL = trustSSL;
-  }
-
-  public boolean isFailOnError() {
-    return failOnError;
-  }
-
-  @DataBoundSetter
   public void setFailOnError(boolean failOnError) {
     this.failOnError = failOnError;
   }
 
   @DataBoundSetter
-  public void setRawMessage(final boolean rawMessage) {
-    this.rawMessage = rawMessage;
-  }
-
-  @DataBoundSetter
-  public void setWebhookToken(final String webhookToken) {
+  public void setWebhookToken(String webhookToken) {
     this.webhookToken = Util.fixEmpty(webhookToken);
   }
 
@@ -168,16 +139,37 @@ public class RocketSendStep extends AbstractStepImpl {
   }
 
   @DataBoundSetter
-  public void setUseGlobalWebhookToken(boolean useGlobalWebhookToken) {
-    this.useGlobalWebhookToken = useGlobalWebhookToken;
+  public void setCredentialsId(final String credentialsId) {
+    this.credentialsId = Util.fixEmpty(credentialsId);
   }
 
-  @DataBoundConstructor
-  public RocketSendStep(@NonNull String message) {
-    this.message = message;
+  @DataBoundSetter
+  public void setEmoji(String emoji) {
+    this.emoji = Util.fixEmpty(emoji);
+  }
+
+  @DataBoundSetter
+  public void setAvatar(String avatar) {
+    this.avatar = Util.fixEmpty(avatar);
+  }
+
+  @DataBoundSetter
+  public void setColor(String color) {
+    this.color = Util.fixEmpty(color);
+  }
+
+  @DataBoundSetter
+  public void setRawMessage(boolean rawMessage) {
+    this.rawMessage = rawMessage;
+  }
+
+  @DataBoundSetter
+  public void setAttachments(List<MessageAttachment> attachments) {
+    this.attachments = attachments;
   }
 
   @Extension
+  @Symbol("rocketSend")
   public static class DescriptorImpl extends AbstractStepDescriptorImpl {
 
     public DescriptorImpl() {
@@ -194,26 +186,38 @@ public class RocketSendStep extends AbstractStepImpl {
       return Messages.RocketSendStepDisplayName();
     }
 
-    public ListBoxModel doFillWebhookTokenCredentialIdItems() {
+    public ListBoxModel doFillCredentialsIdItems(@AncestorInPath ItemGroup<?> context, @QueryParameter String credentialsId) {
       if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
-        return new ListBoxModel();
+        return new StandardListBoxModel().includeCurrentValue(credentialsId);
       }
+      ItemGroup<?> lookupContext = context != null ? context : Jenkins.get();
       return new StandardListBoxModel()
-        .withEmptySelection()
-        .withAll(lookupCredentials(
-          StringCredentials.class,
-          Jenkins.get(),
+        .includeEmptyValue()
+        .includeMatchingAs(
           ACL.SYSTEM,
-          Collections.<DomainRequirement>emptyList())
-        );
+          lookupContext,
+          StandardUsernamePasswordCredentials.class,
+          Collections.<DomainRequirement>emptyList(),
+          CredentialsMatchers.always()
+        )
+        .includeCurrentValue(credentialsId);
     }
 
-    //WARN users that they should not use the plain/exposed token, but rather the token credential id
-    public FormValidation doCheckWebhookToken(@QueryParameter String value) {
-      if (StringUtils.isEmpty(value)) {
-        return FormValidation.ok();
+    public ListBoxModel doFillWebhookTokenCredentialIdItems(@AncestorInPath ItemGroup<?> context, @QueryParameter String webhookTokenCredentialId) {
+      if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
+        return new StandardListBoxModel().includeCurrentValue(webhookTokenCredentialId);
       }
-      return FormValidation.warning("Exposing your Integration Token is a security risk. Please use the Webhook Token Credential ID");
+      ItemGroup<?> lookupContext = context != null ? context : Jenkins.get();
+      return new StandardListBoxModel()
+        .includeEmptyValue()
+        .includeMatchingAs(
+          ACL.SYSTEM,
+          lookupContext,
+          StringCredentials.class,
+          Collections.<DomainRequirement>emptyList(),
+          CredentialsMatchers.always()
+        )
+        .includeCurrentValue(webhookTokenCredentialId);
     }
   }
 
@@ -221,88 +225,64 @@ public class RocketSendStep extends AbstractStepImpl {
 
     private static final long serialVersionUID = 1L;
 
-    @Inject
-    transient RocketSendStep step;
-
-    @StepContextParameter
-    transient TaskListener listener;
-
-    @StepContextParameter
-    transient Run run;
+    @StepContextParameter transient Run<?,?> run;
+    @StepContextParameter transient TaskListener listener;
+    @javax.inject.Inject transient RocketSendStep step;
 
     @Override
     protected Void run() throws Exception {
-      Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-        public void uncaughtException(Thread t, Throwable e) {
-          LOG.log(Level.SEVERE, t + " runStep threw an exception: ", e);
-        }
+      Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+        LOG.log(Level.SEVERE, t + " runStep threw an exception: ", e);
       });
 
-      //default to global config values if not set in step, but allow step to override all global settings
-      Jenkins jenkins;
-      try {
-        jenkins = Jenkins.get();
-      } catch (IllegalStateException ne) {
-        listener.error(Messages.NotificationFailedWithException(ne));
-        return null;
+      Jenkins jenkins = Jenkins.get();
+      if (jenkins == null) {
+        throw new IllegalStateException("Jenkins instance not available");
       }
-      RocketChatNotifier.DescriptorImpl rocketDesc = jenkins.getDescriptorByType(
-        RocketChatNotifier.DescriptorImpl.class);
+      RocketChatNotifier.DescriptorImpl rocketDesc = jenkins.getDescriptorByType(RocketChatNotifier.DescriptorImpl.class);
       String server = step.serverUrl != null ? step.serverUrl : rocketDesc.getRocketServerUrl();
       boolean trustSSL = step.trustSSL || rocketDesc.isTrustSSL();
       String user = rocketDesc.getUsername();
       String password = rocketDesc.getPassword();
+      String globalCredentialsId = rocketDesc.getCredentialsId();
       String channel = step.channel != null ? step.channel : rocketDesc.getChannel();
       String jenkinsUrl = rocketDesc.getBuildServerUrl();
-      String webhookToken;
-      String webhookTokenCredentialId;
-      if (!step.useGlobalWebhookToken) {
-        webhookToken = step.getWebhookToken();
-        webhookTokenCredentialId = step.getWebhookTokenCredentialId();
-      } else {
-        webhookToken = rocketDesc.getWebhookToken();
-        webhookTokenCredentialId = rocketDesc.getWebhookTokenCredentialId();
-      }
-      // placing in console log to simplify testing of retrieving values from global config or from step field; also used for tests
+      String webhookToken = step.useGlobalWebhookToken ? rocketDesc.getWebhookToken() : step.getWebhookToken();
+      String webhookTokenCredentialId = step.useGlobalWebhookToken ? rocketDesc.getWebhookTokenCredentialId() : step.getWebhookTokenCredentialId();
+      String effectiveCredentialsId = step.getCredentialsId() != null ? step.getCredentialsId() : globalCredentialsId;
+
       listener.getLogger().println(Messages.RocketSendStepConfig(server, trustSSL, channel, step.message));
 
-      // getRocketClient needs to be wrapped inside a try-catch because it can fail too if the target RocketChat server does not behave properly.
       try {
-        RocketClient rocketClient = getRocketClient(server, trustSSL, user, password, channel, webhookToken, webhookTokenCredentialId);
+        RocketClient rocketClient = getRocketClient(
+            run.getParent(), server, trustSSL, user, password,
+            channel, webhookToken, webhookTokenCredentialId, effectiveCredentialsId);
 
         String msg = step.message;
         if (!step.rawMessage) {
-          msg += "," + run.getFullDisplayName() + "," + jenkinsUrl + run.getUrl() + "";
+          msg += "," + run.getFullDisplayName() + "," + jenkinsUrl + run.getUrl();
         }
 
         boolean publishSuccess = rocketClient.publish(msg, step.emoji, step.avatar,
-          MessageAttachment.convertMessageAttachmentsToMaps(step.attachments));
+            MessageAttachment.convertMessageAttachmentsToMaps(step.attachments));
         if (!publishSuccess && step.failOnError) {
           throw new AbortException(Messages.NotificationFailed());
-        }
-        else if (!publishSuccess) {
+        } else if (!publishSuccess) {
           listener.error(Messages.NotificationFailed());
         }
         return null;
-
-      } catch (RocketClientException rce) {
-        if (step.failOnError) {
-          throw rce;
-        } else {
-          listener.error(Messages.NotificationFailedWithException(rce));
-          return null;
-        }
+      } catch (Exception ne) {
+        listener.error(Messages.NotificationFailedWithException(ne.getMessage()));
+        return null;
       }
     }
 
-    //streamline unit testing
-    RocketClient getRocketClient(String server, boolean trustSSL, String user, String password, String channel,
-                                 String webhookToken, String webhookTokenCredentialId) throws RocketClientException {
-      if (!StringUtils.isEmpty(webhookToken) || !StringUtils.isEmpty(webhookTokenCredentialId)) {
-        return new RocketClientWebhookImpl(server, trustSSL, webhookToken, webhookTokenCredentialId, channel);
-      }
-      return new RocketClientImpl(server, trustSSL, user, password, channel);
+    // Helper for testing
+    RocketClient getRocketClient(Item context, String server, boolean trustSSL, String user, String password, String channel,
+                                 String webhookToken, String webhookTokenCredentialId, String credentialsId) throws RocketClientException {
+      return RocketChatNotifier.getRocketClient(context, server, user, password, channel,
+                                               webhookToken, webhookTokenCredentialId, credentialsId, trustSSL);
     }
-
   }
 }
+
