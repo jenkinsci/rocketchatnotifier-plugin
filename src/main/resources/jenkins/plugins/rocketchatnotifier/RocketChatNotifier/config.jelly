@@ -1,89 +1,24 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
-         xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:c="/lib/credentials">
-    <f:entry title="Notify Build Start">
-        <f:checkbox name="notifyStart" value="true" checked="${instance.getNotifyStart()}"/>
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:c="/lib/credentials">
+  <f:section title="RocketChat Notifier Configuration">
+    <f:entry title="Rocket Server URL">
+      <f:textbox name="rocketServerUrl" value="${instance.getRocketServerUrl()}"/>
     </f:entry>
-
-    <f:entry title="Notify Aborted">
-        <f:checkbox name="notifyAborted" value="true" checked="${instance.getNotifyAborted()}"/>
+    <f:entry title="Credentials (Username/Password) - override global" field="credentialsId" description="If set, overrides global Username/Password credentials.">
+      <c:select value="${instance.getCredentialsId()}"/>
     </f:entry>
-
-    <f:entry title="Notify Failure">
-        <f:checkbox name="notifyFailure" value="true" checked="${instance.getNotifyFailure()}"/>
+    <f:entry title="Trust Server Certificate?" description="If checked, the SSL certificate of the Rocket Server will not be checked">
+      <f:checkbox field="trustSSL" name="trustSSL" checked="${instance.isTrustSSL()}"/>
     </f:entry>
-
-    <f:entry title="Notify Not Built">
-        <f:checkbox name="notifyNotBuilt" value="true" checked="${instance.getNotifyNotBuilt()}"/>
+    <f:entry title="Channel" description="Comma separated list of rooms (e.g. #project) and/or persons (e.g. @john)">
+      <f:textbox name="channel" value="${instance.getChannel()}"/>
     </f:entry>
-
-    <f:entry title="Notify Success">
-        <f:checkbox name="notifySuccess" value="true" checked="${instance.getNotifySuccess()}"/>
+    <f:entry title="Webhook Token Credential ID" field="webhookTokenCredentialId" description="Webhook token as Secret Text credential for posting messages. Overrides webhook token text.">
+      <c:select value="${instance.getWebhookTokenCredentialId()}"/>
     </f:entry>
-
-    <f:entry title="Notify Unstable">
-        <f:checkbox name="notifyUnstable" value="true" checked="${instance.getNotifyUnstable()}"/>
-    </f:entry>
-
-    <f:entry title="Notify Back To Normal">
-        <f:checkbox name="notifyBackToNormal" value="true" checked="${instance.getNotifyBackToNormal()}"/>
-    </f:entry>
-
-    <f:advanced>
-        <f:entry title="Notify Repeated Failure">
-            <f:checkbox name="notifyRepeatedFailure" value="true"
-                        checked="${instance.getNotifyRepeatedFailure()}"/>
-        </f:entry>
-        <f:entry title="Include Test Summary">
-            <f:checkbox name="includeTestSummary" value="true" checked="${instance.includeTestSummary()}"/>
-        </f:entry>
-
-        <f:entry title="Include Test Log">
-            <f:checkbox name="includeTestLog" value="true" checked="${instance.includeTestLog()}"/>
-        </f:entry>
-
-        <f:entry title="Sent RAW message">
-            <f:checkbox name="rawMessage" value="true" checked="${instance.isRawMessage()}"/>
-        </f:entry>
-
-        <f:optionalBlock name="includeCustomMessage" title="Include Custom Message" inline="true" checked="${instance.includeCustomMessage()}">
-            <f:entry title="Custom Message">
-                <f:textarea name="customMessage" value="${instance.getCustomMessage()}"/>
-            </f:entry>
-        </f:optionalBlock>
-
-        <f:optionalBlock>
-          <f:entry title="Attachments">
-            <f:repeatableProperty field="attachments"/>
-          </f:entry>
-        </f:optionalBlock>
-
-        <f:entry name="commitInfoChoice" field="commitInfoChoice" title="Notification message includes" description="What commit information to include into notification message">
-          <f:enum>${it.displayName}</f:enum>
-        </f:entry>
-
-        <f:entry title="Rocket Server URL">
-            <f:textbox name="rocketServerUrl" value="${instance.getRocketServerUrl()}"/>
-        </f:entry>
-
-        <f:entry title="Trust Server Certificate?" description="If checked, the SSL certificate of the Rocket Server will not be checked">
-            <f:checkbox field="trustSSL" name="trustSSL" checked="${instance.isTrustSSL()}"/>
-        </f:entry>
-
-        <f:entry title="Project Channel" description="Comma separated list of rooms (e.g. #project) and / or persons (e.g. @john)">
-            <f:textbox name="channel" value="${instance.getChannel()}"/>
-        </f:entry>
-
-        <f:entry title="Incoming Webhook Token" description="Webhook token for posting messages. Overrides global authentication data and channel.">
-            <f:textbox field="webhookToken" name="webhookToken" value="${instance.getWebhookToken()}"/>
-        </f:entry>
-
-        <f:entry title="Webhook Token Credential ID" field="webhookTokenCredentialId" name="webhookTokenCredentialId" description="Webhook token as Secret Text credential for posting messages. Overrides webhook token text.">
-            <c:select value="${instance.getWebhookTokenCredentialId()}"/>
-        </f:entry>
-
-        <f:validateButton
-                title="${%Test Connection}" progress="${%Testing...}"
-                method="testConnection" with="rocketServerUrl,trustSSL,channel,webhookToken,webhookTokenCredentialId"/>
-    </f:advanced>
+    <f:validateButton
+        title="${%Test Connection}" progress="${%Testing...}"
+        method="testConnection" with="rocketServerUrl,trustSSL,channel,webhookTokenCredentialId,credentialsId"/>
+  </f:section>
 </j:jelly>
+
