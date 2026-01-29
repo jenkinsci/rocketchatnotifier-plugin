@@ -62,7 +62,7 @@ import org.kohsuke.stapler.QueryParameter;
 import hudson.tasks.Notifier;
 import org.kohsuke.stapler.AncestorInPath;
 import hudson.tasks.Notifier;
-import hudson.security.csrf.RequirePOST;
+import org.kohsuke.stapler.interceptor.RequirePOST;
 import hudson.tasks.Notifier;
 import org.kohsuke.stapler.StaplerRequest;
 import hudson.tasks.Notifier;
