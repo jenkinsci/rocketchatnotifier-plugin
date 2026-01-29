@@ -263,13 +263,6 @@
   </dependencies>
 
   <dependencyManagement>
-	   <dependencies>
-    <dependency>
-      <groupId>com.google.errorprone</groupId>
-      <artifactId>error_prone_annotations</artifactId>
-      <version>2.36.0</version> <!-- Latest version wins -->
-    </dependency>
-  </dependencies>
 	  <dependencies>
       <dependency>
         <!-- Pick up common dependencies for the selected LTS line: https://github.com/jenkinsci/bom#usage -->
@@ -279,6 +272,12 @@
         <scope>import</scope>
         <type>pom</type>
       </dependency>
+        <dependency>
+      <groupId>com.google.errorprone</groupId>
+      <artifactId>error_prone_annotations</artifactId>
+      <version>2.36.0</version> <!-- Latest version wins -->
+    </dependency>
+
     </dependencies>
   </dependencyManagement>
 
