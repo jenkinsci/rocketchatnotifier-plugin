@@ -1,0 +1,9 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["github>CloudTooling/renovate-config"],
+  "packageRules": [
+    {
+      "matchPackageNames": ["/mock-server/"],
+      "groupName": "MockServer"
+    }
+  ]
