@@ -205,6 +205,15 @@
       <artifactId>plain-credentials</artifactId>
     </dependency>
     <dependency>
+      <!-- jackson2-api pins jackson-annotations to a version missing JsonSerializeAs,
+           which mockserver-core 7.5.0 needs at class-init time; force a version that has it.
+           Compile scope, matching jackson2-api's own scope for this artifact, since
+           MessageAttachment.java also imports com.fasterxml.jackson.annotation directly. -->
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>2.21</version>
+    </dependency>
+    <dependency>
       <groupId>org.jenkins-ci.plugins.workflow</groupId>
       <artifactId>workflow-support</artifactId>
       <classifier>tests</classifier>
