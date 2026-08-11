@@ -2,6 +2,7 @@ package jenkins.plugins.rocketchatnotifier.workflow;
 
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -10,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import hudson.model.Run;
 import hudson.model.TaskListener;
+import hudson.util.Secret;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,12 +65,18 @@ public class RocketSendTest {
 
     closeableList.add(Mockito.mockConstruction(RocketClientImpl.class));
 
+    // Resolve Secret values before stubbing: Secret.fromString() itself calls the (also
+    // statically mocked) Jenkins class internally, and doing that inside a when(...).thenReturn(...)
+    // chain confuses Mockito's stubbing bookkeeping.
+    Secret passwordSecret = Secret.fromString("pass");
+    Secret webhookTokenSecret = Secret.fromString("default-webhook-token");
+
     when(jenkins.getDescriptorByType(RocketChatNotifier.DescriptorImpl.class)).thenReturn(rocketDescMock);
     when(rocketDescMock.getRocketServerUrl()).thenReturn("rocket.test.com");
     when(rocketDescMock.getUsername()).thenReturn("user");
-    when(rocketDescMock.getPassword()).thenReturn("pass");
+    when(rocketDescMock.getPassword()).thenReturn(passwordSecret);
     when(rocketDescMock.getChannel()).thenReturn("default");
-    when(rocketDescMock.getWebhookToken()).thenReturn("default-webhook-token");
+    when(rocketDescMock.getWebhookToken()).thenReturn(webhookTokenSecret);
     when(rocketDescMock.getWebhookTokenCredentialId()).thenReturn("default-webhook-token-credential-id");
   }
 
@@ -91,10 +99,10 @@ public class RocketSendTest {
     stepExecution.run = run;
     // when
     when(taskListenerMock.getLogger()).thenReturn(printStreamMock);
-    when(stepExecution.getRocketClient(anyString(), anyBoolean(), anyString(), anyString(), anyString(), isNull(), isNull())).thenReturn(rocketClientMock);
+    when(stepExecution.getRocketClient(anyString(), anyBoolean(), anyString(), anyString(), anyString(), eq(""), isNull())).thenReturn(rocketClientMock);
     stepExecution.run();
     // then
-    verify(stepExecution, times(1)).getRocketClient("rocket.test.com", false, "user", "pass", "default", null, null);
+    verify(stepExecution, times(1)).getRocketClient("rocket.test.com", false, "user", "pass", "default", "", null);
   }
 
   @Test
@@ -129,7 +137,7 @@ public class RocketSendTest {
     when(stepExecution.getRocketClient(anyString(), anyBoolean(), anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(rocketClientMock);
     stepExecution.run();
     // then
-    verify(stepExecution, times(1)).getRocketClient("rocket.test.com", false, "user", "pass", "channel", null, null);
+    verify(stepExecution, times(1)).getRocketClient("rocket.test.com", false, "user", "pass", "channel", "", null);
   }
 
   @Test

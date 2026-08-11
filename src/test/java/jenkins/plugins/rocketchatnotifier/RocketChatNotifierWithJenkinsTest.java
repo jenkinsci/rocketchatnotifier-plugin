@@ -147,8 +147,8 @@ public class RocketChatNotifierWithJenkinsTest {
     assertEquals("channel 1", before.getChannel());
     assertEquals("channel 2", after.getChannel());
 
-    assertEquals("webhookToken 1", before.getWebhookToken());
-    assertEquals("webhookToken 2", after.getWebhookToken());
+    assertEquals("webhookToken 1", before.getWebhookToken().getPlainText());
+    assertEquals("webhookToken 2", after.getWebhookToken().getPlainText());
 
     assertEquals("webhookTokenCredentialId 1", before.getWebhookTokenCredentialId());
     assertEquals("id 1", after.getWebhookTokenCredentialId());
