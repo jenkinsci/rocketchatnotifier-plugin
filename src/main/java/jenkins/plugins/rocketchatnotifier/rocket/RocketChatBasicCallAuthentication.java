@@ -1,11 +1,12 @@
 package jenkins.plugins.rocketchatnotifier.rocket;
 
+import hudson.util.Secret;
 import jenkins.plugins.rocketchatnotifier.rocket.errorhandling.RocketClientException;
 import kong.unirest.HttpRequest;
 import kong.unirest.HttpResponse;
 import kong.unirest.JsonNode;
-import kong.unirest.Unirest;
 import kong.unirest.UnirestException;
+import kong.unirest.UnirestInstance;
 import kong.unirest.json.JSONObject;
 
 /**
@@ -14,8 +15,8 @@ import kong.unirest.json.JSONObject;
 public class RocketChatBasicCallAuthentication implements RocketChatCallAuthentication {
   private final String serverUrl;
   private final String user;
-  private final String password;
-  private String authToken = "";
+  private final Secret password;
+  private Secret authToken = Secret.fromString("");
   private String userId = "";
 
   public RocketChatBasicCallAuthentication(String serverUrl, String user, String password) {
@@ -32,21 +33,21 @@ public class RocketChatBasicCallAuthentication implements RocketChatCallAuthenti
       this.serverUrl = serverUrl;
     }
     this.user = user;
-    this.password = password;
+    this.password = Secret.fromString(password);
   }
 
   @Override
   public boolean isAuthenticated() {
-    return !authToken.isEmpty() && !userId.isEmpty();
+    return !authToken.getPlainText().isEmpty() && !userId.isEmpty();
   }
 
   @Override
-  public void doAuthentication() throws RocketClientException {
+  public void authenticate(UnirestInstance unirest) throws RocketClientException {
     HttpResponse<JsonNode> loginResult;
     String apiURL = serverUrl + "v1/login";
     String userInfoUrl = serverUrl + "v1/me";
     try {
-      loginResult = Unirest.post(apiURL).field("user", user).field("password", password).asJson();
+      loginResult = unirest.post(apiURL).field("user", user).field("password", password.getPlainText()).asJson();
     } catch (UnirestException e) {
       throw new RocketClientException("Please check if the server API " + apiURL + " is correct: (Login-Error 1)", e);
     }
@@ -54,7 +55,7 @@ public class RocketChatBasicCallAuthentication implements RocketChatCallAuthenti
     if (loginResult.getStatus() == 401) {
       // try via token
       try {
-        loginResult = Unirest.get(userInfoUrl).header("X-User-Id", user).header("X-Auth-Token", password).asJson();
+        loginResult = unirest.get(userInfoUrl).header("X-User-Id", user).header("X-Auth-Token", password.getPlainText()).asJson();
         if (loginResult.getStatus() == 401) {
           throw new RocketClientException("The username and password provided are incorrect.");
         }
@@ -67,7 +68,7 @@ public class RocketChatBasicCallAuthentication implements RocketChatCallAuthenti
     } else {
       JSONObject data = loginResult.getBody().getObject().getJSONObject("data");
       this.userId = data.getString("userId");
-      this.authToken = data.getString("authToken");
+      this.authToken = Secret.fromString(data.getString("authToken"));
     }
 
     if (loginResult.getStatus() != 200) {
@@ -87,7 +88,7 @@ public class RocketChatBasicCallAuthentication implements RocketChatCallAuthenti
 
   @Override
   public void addAuthenticationDataToRequest(HttpRequest request) {
-    request.header("X-Auth-Token", authToken);
+    request.header("X-Auth-Token", authToken.getPlainText());
     request.header("X-User-Id", userId);
   }
 }

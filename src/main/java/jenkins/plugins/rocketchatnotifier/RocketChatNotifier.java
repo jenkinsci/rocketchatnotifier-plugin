@@ -16,6 +16,7 @@ import hudson.tasks.Notifier;
 import hudson.tasks.Publisher;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+import hudson.util.Secret;
 import jenkins.model.Jenkins;
 import jenkins.model.JenkinsLocationConfiguration;
 import jenkins.plugins.rocketchatnotifier.model.MessageAttachment;
@@ -49,7 +50,7 @@ public class RocketChatNotifier extends Notifier {
   private String rocketServerUrl;
   private boolean trustSSL;
   private String username;
-  private String password;
+  private Secret password;
   private String channel;
   private String buildServerUrl;
   private boolean notifyStart;
@@ -67,7 +68,7 @@ public class RocketChatNotifier extends Notifier {
   private String customMessage;
   private boolean rawMessage;
   private List<MessageAttachment> attachments;
-  private String webhookToken;
+  private Secret webhookToken;
   private String webhookTokenCredentialId;
 
   @Override
@@ -162,7 +163,7 @@ public class RocketChatNotifier extends Notifier {
     return customMessage;
   }
 
-  public String getWebhookToken() {
+  public Secret getWebhookToken() {
     return webhookToken;
   }
 
@@ -304,7 +305,7 @@ public class RocketChatNotifier extends Notifier {
 
   @DataBoundSetter
   public void setWebhookToken(String webhookToken) {
-    this.webhookToken = webhookToken;
+    this.webhookToken = Secret.fromString(webhookToken);
   }
 
   @DataBoundSetter
@@ -334,7 +335,7 @@ public class RocketChatNotifier extends Notifier {
 
   @DataBoundSetter
   public void setPassword(String password) {
-    this.password = password;
+    this.password = Secret.fromString(password);
   }
 
   @DataBoundSetter
@@ -358,7 +359,7 @@ public class RocketChatNotifier extends Notifier {
     this.rocketServerUrl = rocketServerUrl;
     this.trustSSL = trustSSL;
     this.username = username;
-    this.password = password;
+    this.password = Secret.fromString(password);
     this.buildServerUrl = buildServerUrl;
     this.channel = channel;
     this.notifyStart = notifyStart;
@@ -376,7 +377,7 @@ public class RocketChatNotifier extends Notifier {
     this.rawMessage = rawMessage;
     this.customMessage = customMessage;
     this.attachments = attachments;
-    this.webhookToken = webhookToken;
+    this.webhookToken = Secret.fromString(webhookToken);
     this.webhookTokenCredentialId = webhookTokenCredentialId;
   }
 
@@ -393,9 +394,9 @@ public class RocketChatNotifier extends Notifier {
     if (StringUtils.isEmpty(username)) {
       username = getDescriptor().getUsername();
     }
-    String password = this.password;
-    if (StringUtils.isEmpty(password)) {
-      password = getDescriptor().getPassword();
+    String resolvedPassword = Secret.toString(this.password);
+    if (StringUtils.isEmpty(resolvedPassword)) {
+      resolvedPassword = Secret.toString(getDescriptor().getPassword());
     }
     String channel = this.channel;
     if (StringUtils.isEmpty(channel)) {
@@ -405,9 +406,9 @@ public class RocketChatNotifier extends Notifier {
     if (StringUtils.isEmpty(webhookTokenCredentialId)) {
       webhookTokenCredentialId = getDescriptor().getWebhookTokenCredentialId();
     }
-    String webhookToken = this.webhookToken;
-    if (StringUtils.isEmpty(webhookToken)) {
-      webhookToken = getDescriptor().getWebhookToken();
+    String resolvedWebhookToken = Secret.toString(this.webhookToken);
+    if (StringUtils.isEmpty(resolvedWebhookToken)) {
+      resolvedWebhookToken = Secret.toString(getDescriptor().getWebhookToken());
     }
 
     EnvVars env;
@@ -419,9 +420,9 @@ public class RocketChatNotifier extends Notifier {
     }
     serverUrl = env.expand(serverUrl);
     username = env.expand(username);
-    password = env.expand(password);
+    resolvedPassword = env.expand(resolvedPassword);
 
-    return getRocketClient(serverUrl, username, password, channel, webhookToken, webhookTokenCredentialId, trustSSL);
+    return getRocketClient(serverUrl, username, resolvedPassword, channel, resolvedWebhookToken, webhookTokenCredentialId, trustSSL);
   }
 
   public static RocketClient getRocketClient(String serverUrl, String username, String password, String channel, String webhookToken, String webhookTokenCredentialId, boolean trustSSL) throws RocketClientException {
@@ -463,10 +464,10 @@ public class RocketChatNotifier extends Notifier {
     private String rocketServerUrl;
     private boolean trustSSL;
     private String username;
-    private String password;
+    private Secret password;
     private String channel;
     private String buildServerUrl;
-    private String webhookToken;
+    private Secret webhookToken;
     private String webhookTokenCredentialId;
 
     public static final CommitInfoChoice[] COMMIT_INFO_CHOICES = CommitInfoChoice.values();
@@ -487,7 +488,7 @@ public class RocketChatNotifier extends Notifier {
       return username;
     }
 
-    public String getPassword() {
+    public Secret getPassword() {
       return password;
     }
 
@@ -495,7 +496,7 @@ public class RocketChatNotifier extends Notifier {
       return channel;
     }
 
-    public String getWebhookToken() {
+    public Secret getWebhookToken() {
       return webhookToken;
     }
 
@@ -525,7 +526,7 @@ public class RocketChatNotifier extends Notifier {
 
     @DataBoundSetter
     public void setPassword(String password) {
-      this.password = password;
+      this.password = Secret.fromString(password);
     }
 
     @DataBoundSetter
@@ -552,7 +553,7 @@ public class RocketChatNotifier extends Notifier {
 
     @DataBoundSetter
     public void setWebhookToken(String webhookToken) {
-      this.webhookToken = webhookToken;
+      this.webhookToken = Secret.fromString(webhookToken);
     }
 
     @DataBoundSetter
@@ -601,7 +602,7 @@ public class RocketChatNotifier extends Notifier {
         }
         String targetPassword = password;
         if (StringUtils.isEmpty(targetPassword)) {
-          targetPassword = this.password;
+          targetPassword = Secret.toString(this.password);
         }
         String targetChannel = channel;
         if (StringUtils.isEmpty(targetChannel)) {
@@ -613,7 +614,7 @@ public class RocketChatNotifier extends Notifier {
         }
         String targetWebhookToken = token;
         if (StringUtils.isEmpty(targetWebhookToken)) {
-          targetWebhookToken = this.webhookToken;
+          targetWebhookToken = Secret.toString(this.webhookToken);
         }
         String targetWebhookTokenCredentialId = webhookTokenCredentialId;
         if (StringUtils.isEmpty(targetWebhookTokenCredentialId)) {
@@ -646,6 +647,7 @@ public class RocketChatNotifier extends Notifier {
       }
     }
 
+    @RequirePOST
     public ListBoxModel doFillWebhookTokenCredentialIdItems() {
       if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
         return new ListBoxModel();
@@ -674,7 +676,7 @@ public class RocketChatNotifier extends Notifier {
 
     private String rocketServerUrl;
     private String username;
-    private String password;
+    private Secret password;
     private String channel;
     private boolean trustSSL;
     private boolean notifyStart;
@@ -713,7 +715,7 @@ public class RocketChatNotifier extends Notifier {
       this.rocketServerUrl = rocketServerUrl;
       this.trustSSL = trustSSL;
       this.username = username;
-      this.password = password;
+      this.password = Secret.fromString(password);
       this.channel = channel;
       this.notifyStart = notifyStart;
       this.notifyAborted = notifyAborted;
@@ -746,7 +748,7 @@ public class RocketChatNotifier extends Notifier {
     }
 
     @Exported
-    public String getPassword() {
+    public Secret getPassword() {
       return password;
     }
 

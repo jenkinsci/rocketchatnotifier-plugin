@@ -13,6 +13,7 @@ import kong.unirest.HttpRequestWithBody;
 import kong.unirest.HttpResponse;
 import kong.unirest.RequestBodyEntity;
 import kong.unirest.Unirest;
+import kong.unirest.UnirestInstance;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -59,6 +60,13 @@ public class RocketChatClientCallBuilder {
 
   private final RocketChatCallAuthentication authentication;
 
+  /**
+   * A dedicated, per-server Unirest instance. Using the shared static {@link Unirest} singleton
+   * here would apply this server's trustSSL/proxy settings to every other HTTP call made via
+   * Unirest anywhere else in the Jenkins process.
+   */
+  private final UnirestInstance unirest;
+
   protected RocketChatClientCallBuilder(String serverUrl, boolean trustSSL, String user, String password) throws RocketClientException {
     this(new RocketChatBasicCallAuthentication(serverUrl, user, password), serverUrl, trustSSL);
     this.serverUrl = serverUrl;
@@ -77,8 +85,9 @@ public class RocketChatClientCallBuilder {
     this.serverUrl = serverUrl;
 
 
+    this.unirest = Unirest.spawnInstance();
     try {
-      Unirest.config().httpClient(createHttpClient(serverUrl, trustSSL));
+      this.unirest.config().httpClient(createHttpClient(serverUrl, trustSSL));
     } catch (Exception e) {
       throw new RocketClientException(e);
     }
@@ -95,7 +104,7 @@ public class RocketChatClientCallBuilder {
   protected Response buildCall(RocketChatRestApiV1 call, RocketChatQueryParams queryParams, Object body)
     throws RocketClientException {
     if (call.requiresAuth() && !authentication.isAuthenticated()) {
-      authentication.doAuthentication();
+      authentication.authenticate(this.unirest);
     }
 
     switch (call.getHttpMethod()) {
@@ -109,7 +118,7 @@ public class RocketChatClientCallBuilder {
   }
 
   private Response buildGetCall(RocketChatRestApiV1 call, RocketChatQueryParams queryParams) throws RocketClientException {
-    GetRequest req = Unirest.get(authentication.getUrlForRequest(call));
+    GetRequest req = unirest.get(authentication.getUrlForRequest(call));
 
     if (call.requiresAuth()) {
       authentication.addAuthenticationDataToRequest(req);
@@ -130,7 +139,7 @@ public class RocketChatClientCallBuilder {
 
   private Response buildPostCall(RocketChatRestApiV1 call, RocketChatQueryParams queryParams, Object body)
     throws RocketClientException {
-    HttpRequestWithBody requestWithBody = Unirest.post(authentication.getUrlForRequest(call)).header("Content-Type",
+    HttpRequestWithBody requestWithBody = unirest.post(authentication.getUrlForRequest(call)).header("Content-Type",
       "application/json");
 
     if (call.requiresAuth()) {

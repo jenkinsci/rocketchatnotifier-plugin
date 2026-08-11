@@ -13,6 +13,7 @@ import hudson.model.TaskListener;
 import hudson.security.ACL;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+import hudson.util.Secret;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
@@ -35,6 +36,7 @@ import org.jenkinsci.plugins.workflow.steps.StepContextParameter;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.interceptor.RequirePOST;
 
 /**
  * Workflow step to send a rocket channel notification.
@@ -49,7 +51,7 @@ public class RocketSendStep extends AbstractStepImpl {
   private boolean trustSSL;
   private String channel;
   private boolean failOnError;
-  private String webhookToken;
+  private Secret webhookToken;
   private String webhookTokenCredentialId;
 
   private String emoji;
@@ -92,7 +94,7 @@ public class RocketSendStep extends AbstractStepImpl {
     return rawMessage;
   }
 
-  public String getWebhookToken() {
+  public Secret getWebhookToken() {
     return webhookToken;
   }
 
@@ -159,7 +161,7 @@ public class RocketSendStep extends AbstractStepImpl {
 
   @DataBoundSetter
   public void setWebhookToken(final String webhookToken) {
-    this.webhookToken = Util.fixEmpty(webhookToken);
+    this.webhookToken = Secret.fromString(Util.fixEmpty(webhookToken));
   }
 
   @DataBoundSetter
@@ -194,6 +196,7 @@ public class RocketSendStep extends AbstractStepImpl {
       return Messages.RocketSendStepDisplayName();
     }
 
+    @RequirePOST
     public ListBoxModel doFillWebhookTokenCredentialIdItems() {
       if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
         return new ListBoxModel();
@@ -251,16 +254,16 @@ public class RocketSendStep extends AbstractStepImpl {
       String server = step.serverUrl != null ? step.serverUrl : rocketDesc.getRocketServerUrl();
       boolean trustSSL = step.trustSSL || rocketDesc.isTrustSSL();
       String user = rocketDesc.getUsername();
-      String password = rocketDesc.getPassword();
+      String password = Secret.toString(rocketDesc.getPassword());
       String channel = step.channel != null ? step.channel : rocketDesc.getChannel();
       String jenkinsUrl = rocketDesc.getBuildServerUrl();
       String webhookToken;
       String webhookTokenCredentialId;
       if (!step.useGlobalWebhookToken) {
-        webhookToken = step.getWebhookToken();
+        webhookToken = Secret.toString(step.getWebhookToken());
         webhookTokenCredentialId = step.getWebhookTokenCredentialId();
       } else {
-        webhookToken = rocketDesc.getWebhookToken();
+        webhookToken = Secret.toString(rocketDesc.getWebhookToken());
         webhookTokenCredentialId = rocketDesc.getWebhookTokenCredentialId();
       }
       // placing in console log to simplify testing of retrieving values from global config or from step field; also used for tests
