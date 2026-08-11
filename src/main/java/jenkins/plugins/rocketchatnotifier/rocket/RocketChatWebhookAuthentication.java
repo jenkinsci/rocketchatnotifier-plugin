@@ -2,6 +2,7 @@ package jenkins.plugins.rocketchatnotifier.rocket;
 
 import jenkins.plugins.rocketchatnotifier.rocket.errorhandling.RocketClientException;
 import kong.unirest.HttpRequest;
+import kong.unirest.UnirestInstance;
 
 public class RocketChatWebhookAuthentication implements RocketChatCallAuthentication {
   private static final String HOOKS_PATH = "hooks/";
@@ -22,7 +23,7 @@ public class RocketChatWebhookAuthentication implements RocketChatCallAuthentica
   }
 
   @Override
-  public void doAuthentication() throws RocketClientException {
+  public void authenticate(UnirestInstance unirest) throws RocketClientException {
     // No authentication needed
   }
 
