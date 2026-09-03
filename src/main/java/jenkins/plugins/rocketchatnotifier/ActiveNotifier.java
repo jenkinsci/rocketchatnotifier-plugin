@@ -13,7 +13,7 @@ import hudson.scm.ChangeLogSet.Entry;
 import hudson.triggers.SCMTrigger;
 import jenkins.plugins.rocketchatnotifier.model.MessageAttachment;
 import jenkins.plugins.rocketchatnotifier.rocket.errorhandling.RocketClientException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashSet;
 import java.util.LinkedList;

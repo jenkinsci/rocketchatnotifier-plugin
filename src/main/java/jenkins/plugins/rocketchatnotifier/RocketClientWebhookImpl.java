@@ -8,7 +8,7 @@ import jenkins.model.Jenkins;
 import jenkins.plugins.rocketchatnotifier.rocket.RocketChatClient;
 import jenkins.plugins.rocketchatnotifier.rocket.RocketChatClientImpl;
 import jenkins.plugins.rocketchatnotifier.rocket.errorhandling.RocketClientException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 
 import java.security.cert.CertificateException;
