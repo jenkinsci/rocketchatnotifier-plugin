@@ -27,7 +27,7 @@ import jenkins.plugins.rocketchatnotifier.RocketClientImpl;
 import jenkins.plugins.rocketchatnotifier.RocketClientWebhookImpl;
 import jenkins.plugins.rocketchatnotifier.model.MessageAttachment;
 import jenkins.plugins.rocketchatnotifier.rocket.errorhandling.RocketClientException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepDescriptorImpl;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepImpl;
