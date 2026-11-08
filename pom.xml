@@ -215,7 +215,7 @@
            MessageAttachment.java also imports com.fasterxml.jackson.annotation directly. -->
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <version>2.22</version>
+      <version>2.23</version>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins.workflow</groupId>
